@@ -1,0 +1,20 @@
+# 词典与模式表按 UTF-8 无 BOM + LF 存盘：CRLF 会让「原文」尾部带 \r，
+# 词典永远匹配不上（加载器虽已兜底剥 \r，但源文件仍应保持 LF）。
+dict/*.txt text eol=lf
+
+# 源码与脚本按 CRLF 检出，与 Visual Studio 默认一致。
+*.c   text eol=crlf
+*.cpp text eol=crlf
+*.h   text eol=crlf
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.py  text eol=lf
+*.md  text eol=lf
+*.json text eol=lf
+
+# 二进制
+*.png binary
+*.ico binary
+*.dll binary
+*.exe binary

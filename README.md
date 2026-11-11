@@ -21,7 +21,7 @@
 | **升级简单** | 换新版本只要新 exe 与旧版没有结构性差异，词典与钩子都不用重编 |
 | **随时可退** | 一条命令撤销，程序立刻回到原生启动方式 |
 
-当前词典 **1217 条**，覆盖主窗口、右键菜单、选项页、各属性页、插件菜单与列表列头。
+当前词典 **3322 条**（构建时按原文去重，部署副本 **3312 条**），覆盖主窗口、右键菜单、选项页、各属性页、插件菜单与列表列头、消息框与任务对话框。
 
 ---
 
@@ -37,8 +37,9 @@
 | 列表与表头 | 各页的列标题（`SysHeader32`） | `SendMessageW(HDM_INSERTITEMW / LVM_INSERTCOLUMNW …)` |
 | 工具栏与菜单栏 | ToolStatus 插件自绘的工具栏 | `SendMessageW(TB_ADDBUTTONS / TB_SETBUTTONINFO)` |
 | 自绘文本 | 上面这些控件真正落笔时 | `DrawTextW / DrawTextExW / TextOutW / ExtTextOutW`（及 A 版） |
+| 消息框与任务对话框 | `MessageBox` 的正文、`TaskDialog` 的标题/主指令/正文/页脚 | `MessageBoxW/ExW/A/IndirectW`、`comctl32!TaskDialogIndirect/TaskDialog` |
 
-前三类是「写入型」消息：字符串就在消息参数里，改参数即可；第四类是「绘制型」调用：文字已在内存里，只能改写指针或就地覆盖缓冲区。
+前三类是「写入型」消息：字符串就在消息参数里，改参数即可；第四类是「绘制型」调用：文字已在内存里，只能改写指针或就地覆盖缓冲区；最后一类是**参数入口型** —— 消息框正文由 user32 在 `#32770` 内自绘，绘制时**不经过 `DrawTextW` 导出入口**（真 MessageBox 探针实测零命中），只能改 `lpszText`/`lpszCaption` 再转交原函数。`TaskDialog` 还要等 comctl32 就位后再挂（注入时它往往未加载，`MH_CreateHookApi` 会返回 `MODULE_NOT_FOUND` 并静默失效）。
 
 ### 为什么不能在程序目录放一个同名 DLL
 
@@ -232,7 +233,19 @@ UTF-8、无 BOM、LF 换行。每行 `原文<TAB>译文`，`#` 开头是注释�
 | `[11]` | 外部数据与系统名称 | 52 |
 | `[12]` | 运行时未命中（待翻译） | 0 |
 | `[13]` | 数据行内容（勿译，取证用） | 0 |
-| | **合计** | **1217** |
+| `[14]` | 内嵌方案回填（源码 `i18n.c` 静态表） | 916 |
+| `[15]` | 运行期采集回填（`--collect` 未命中核定） | 117 |
+| `[16]` | 右键/主菜单 + 对话框静态串 | 36 |
+| `[17]` | 属性页/列表列头标签 | 7 |
+| `[18]` | 硬件设备/网络适配器属性页标签 | 48 |
+| `[19]` | 窗口探索器属性页标签 | 39 |
+| `[20]` | 池表/管道/等待链/功耗网格列头 | 55 |
+| `[21]` | 对象/句柄属性页标签 | 29 |
+| `[22]` | 固件证书页标签 | 10 |
+| `[23]` | WBCL/TPM/重解析点标签 | 11 |
+| `[24]` | 令牌/程序集/卸载 DLL 零星标签 | 9 |
+| `[25]` | 磁盘/网络追踪/指令指针列头 | 828 |
+| | **合计** | **3322** |
 
 关于 `[09]`：**System Informer 根本没有 `STRINGTABLE` / `MESSAGE TABLE` / `MENU` 资源**。把 34 个 `.rc` 全扫一遍，只有 `DIALOG` 274 块、`VERSIONINFO` 18 块、`ACCELERATORS` 3 块 —— 它的菜单是 `menubar.c` 用代码搭的，字符串是 C 字面量。所以这两个区在 SI 上不存在对应资源，`[09] = 0` 是事实而非遗漏。
 
@@ -349,7 +362,13 @@ dict\ui_gap.tsv           源码 UI 串清单（第 4 段的键来自这里）
         └─[tools\organize.py]────────> build\zh_dict.categorized.txt 分区表（给人看）
                                        build\zh_dict.index.tsv       逐条出处（审计）
                                        dict\zh_dict.txt              部署用（最终）
+
+dict\zh_dict.extra.txt    手工补丁层（逐轮查缺补漏补进来的词条，build.ps1 合并）
+        │
+        └─[scripts\build.ps1]─────>  dist\zh_dict.txt                主词典 + 手工补丁（补丁优先）
 ```
+
+**手工补丁层**：`build_zh_dict.py` / `organize.py` 这两步只吃 `passolo.txt` / `zh_dict.base.txt` / `ui_zh.py` / `ui_gap.tsv`，**不认识任何后补的词条** —— 直接改 `dict\zh_dict.txt` 之后重跑流水线会被整体冲掉。所以逐轮补进来的条目统一写进 `dict\zh_dict.extra.txt`（同一格式，UTF-8 无 BOM，`原文<TAB>译文`），`scripts\build.ps1` 在出 `dist` 时把它合并进去：主词典先按首次出现去重，补丁层**新增的追加、命中同名键的覆盖**。构建日志会打印 `词典合并 : 主词典 N 行 + 手工补丁 M 行（新增 a / 覆盖 b）→ 输出 K 行`。
 
 重新生成词典需要 **System Informer 源码树**（要从里面抽 `.rc` 资源串和代码字面量）。用环境变量指过去：
 
@@ -363,8 +382,8 @@ python tools\organize.py
 
 1. 正常用一段时间，让钩子把没翻到的串收集起来；
 2. `python tools\merge_missed.py` —— 出报告、出翻译工作表、并进词典；
-3. 把决定要译的条目补进 `tools\ui_zh.py`（这样才能长期保下来，直接改 `zh_dict.txt` 下次重建会被覆盖）；
-4. 重跑流水线。
+3. 把决定要译的条目补进 `dict\zh_dict.extra.txt`（手工补丁层，构建时合并，重跑流水线不会被冲掉）；`tools\ui_zh.py` 里的第 4 段同理，那是从源码缺口清单生成的部分；
+4. 重跑流水线，再 `scripts\build.ps1`。
 
 ---
 
@@ -402,7 +421,7 @@ python tools\organize.py
 `_zhcn` 里的文件被删了或被杀软隔离了。跑 `scripts\uninstall.ps1` 先把 IFEO 摘掉，程序立刻能正常启动，然后重新 `install.ps1`。
 
 **想让某个词换个译法？**
-改 `dict\zh_dict.txt` 里对应行（用 UTF-8 无 BOM 保存），重启程序即可。想长期保留就同时改 `tools\ui_zh.py`。
+改 `dict\zh_dict.extra.txt` 里对应行（UTF-8 无 BOM，`原文<TAB>译文`；补丁层会覆盖主词典里的同名键），重新 `scripts\build.ps1` 再 `scripts\install.ps1`，重启程序即可。
 
 **我怎么知道钩子有没有生效？**
 `si_zh_launcher.exe --log <目标>` 会写出启动器日志和钩子日志，里面有载入条目数与 HIT / miss 计数。

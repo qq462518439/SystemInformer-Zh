@@ -44,7 +44,6 @@
 #   [13] 数据行内容（按来源·勿译）                   0 条   <- 指纹判定为列表里的对象名，勿译
 #   合计                                1217 条
 #
-
 # ============================================================
 # [01] 对话框 (DIALOG)    387 条
 #   判据: 源码 .rc 的 DIALOGEX 块 + 控件文本 API
@@ -436,7 +435,6 @@ Write bytes:	写入字节：
 Writes	写入
 Writes delta	写入
 Zeroed	归零
-
 # ============================================================
 # [02] 版本信息 (VERSIONINFO)    6 条
 #   判据: 源码 version.rc 的 VERSIONINFO 块
@@ -447,7 +445,6 @@ OnlineChecks	在线检查
 ToolStatus	工具栏状态
 Updater	更新程序
 UserNotes	用户备注
-
 # ============================================================
 # [03] 菜单 (MENU)    201 条
 #   判据: menubar.c/mainwnd.c 的菜单串（含 & 加速键）
@@ -653,7 +650,6 @@ Update and shut down	更新并关机
 User list...	用户列表...
 Windows Defender Offline Scan	Windows Defender 脱机扫描
 WMI Root Namespace	WMI 根命名空间
-
 # ============================================================
 # [04] 工具栏与按钮 (TOOLBAR)    17 条
 #   判据: plugins\ToolStatus\toolbar.c 等
@@ -675,7 +671,6 @@ Search Services (Ctrl+K)	搜索服务 (Ctrl+K)
 Show details for all processes	显示所有进程的详细信息
 System information	系统信息
 System Information	系统信息
-
 # ============================================================
 # [05] 列表与树 · 列头 (COLUMN)    124 条
 #   判据: PhAddListViewColumn / PhAddTreeNewColumn 的列标题
@@ -804,7 +799,6 @@ Version	版本
 Window Station information	窗口站信息
 Write rate	写速率
 Write rate average	写速率平均值
-
 # ============================================================
 # [06] 选项页 (SETTINGS)    56 条
 #   判据: options.c 的设置项与页签
@@ -865,7 +859,6 @@ Start when I log on	登录时启动
 Themes	主题
 Tray Icon	系统托盘图标
 View on Github	在 GitHub 上查看
-
 # ============================================================
 # [07] 属性页字段 (PROPERTY)    37 条
 #   判据: *prp.c / 进程·线程·内存属性页
@@ -907,7 +900,6 @@ Undefined	未定义
 Untrusted	不受信任
 Virtuali&zation	虚拟化
 Visible	可见
-
 # ============================================================
 # [08] 插件 (PLUGIN)    155 条
 #   判据: plugins\*（未被上面更具体的 API 判据收走的）
@@ -1067,12 +1059,10 @@ Volume trim time	卷修剪时间
 Volume unique identifier	卷唯一标识符
 Volume version	卷版本
 WDDM Version	WDDM 版本
-
 # ============================================================
 # [09] 提示与消息 (MESSAGE)    0 条
 #   判据: PhShowMessage / PhShowError / PhShowWarning
 # ============================================================
-
 # ============================================================
 # [10] 其他代码内字符串 (CODE)    182 条
 #   判据: 有源码出处，但不在上述任何控件上下文里
@@ -1259,7 +1249,6 @@ User share process (instance)	用户共享进程（实例）
 Users List	用户列表
 Zero pad addresses	地址补零
 Zombie Processes	隐藏进程
-
 # ============================================================
 # [11] 外部数据与系统名称 (EXTERNAL)    52 条
 #   判据: 源码里搜不到：Windows 进程名/描述、外部数据、人工补的条目
@@ -1316,7 +1305,6 @@ Windows Logon Application	Windows 登录应用程序
 Windows Security Health Service	Windows 安全健康服务
 Windows Shell Experience Host	Windows Shell 体验主机
 WMI Provider Host	WMI 提供程序主机
-
 # ============================================================
 # [12] 运行时未命中（自动收集·待翻译）    0 条
 #   来源: E:\汉化文件\System Informer\SystemInformer-Zh\dist\zh_dict.missed.txt
@@ -1334,7 +1322,6 @@ WMI Provider Host	WMI 提供程序主机
 #   补法：把译文填到 TAB 右边即可；填好之后这一条就生效了。
 #   想让它归类归位，可把该行挪进上面对应分区（organize.py 重跑会按原文归位）。
 # ============================================================
-
 # ============================================================
 # [13] 数据行内容（按来源·勿译）    0 条
 #   这些**不要翻译**，留在这里是为了留证据、也为了让你能一眼看清
@@ -1346,3 +1333,2131 @@ WMI Provider Host	WMI 提供程序主机
 #   没有任何影响；就算某天真要翻其中一个，把译文填上即可生效。
 #   想彻底不要，可以删掉整个 [13] 区 —— 下次运行还会重新采集到。
 # ============================================================
+# ============================================================
+# [14] 内嵌方案回填（来源：systeminformer 源码树 i18n.c 静态表）
+#   由 extract_i18n.py 从 PhI18nTable 抽取；已剥 \b 加速键后缀与
+#   (&X) 助记符；纯小写动词/比较键、多行消息串未纳入（见工作区
+#   lowercase_review.txt / candidates_multiline.txt）。
+#   重跑 organize.py 会覆盖本文件：需从 zh_dict.extra.txt 重新并入。
+# ============================================================
+Peak private bytes	峰值专用字节
+Private WS	专用 WS
+Shared WS	共享 WS
+Shareable WS	可共享 WS
+Peak virtual size	峰值虚拟大小
+Session ID	会话 ID
+Priority class	优先级类
+USER handles	USER 句柄
+I/O read+other rate	I/O 读取+其他速率
+I/O write rate	I/O 写入速率
+Page priority	页面优先级
+Total CPU time	CPU 总时间
+Kernel CPU time	内核 CPU 时间
+User CPU time	用户 CPU 时间
+Verification status	校验状态
+Verified signer	已验证签名者
+Relative start time	相对开始时间
+Elevation	提权状态
+Window title	窗口标题
+Window status	窗口状态
+Cycles	周期数
+Cycles delta	周期增量
+CPU history	CPU 历史
+Private bytes history	专用字节历史
+I/O history	I/O 历史
+Start address (Win32)	起始地址 (Win32)
+Priority (symbolic)	优先级（符号）
+Created	创建时间
+Start module	起始模块
+Ideal processor	理想处理器
+TID (hex)	TID（十六进制）
+Impersonation	模拟
+Pending IRP	挂起 IRP
+Last system call	上次系统调用
+Last status code	上次状态码
+COM apartment	COM 单元
+COM flags	COM 标志
+Fiber	纤程
+Priority boost	优先级提升
+Stack usage	堆栈使用
+Wait time	等待时间
+Base address	基址
+Load count	加载计数
+Load time	加载时间
+Load reason	加载原因
+Entry point	入口点
+Parent base address	父级基址
+Hyper-V service	Hyper-V 服务
+Binary path	二进制路径
+Error control	错误控制
+Group	组
+Key modified time	键修改时间
+Exit code	退出代码
+Logon domain	登录域
+Logon type	登录类型
+Authentication package	身份验证包
+DNS domain name	DNS 域名
+Logon time	登录时间
+Password last set	密码上次设置
+Logon ID	登录 ID
+Logon server	登录服务器
+User principal name	用户主体名称
+User flags	用户标志
+Failed logon attempts since	失败登录次数（自上次成功）
+Last successful logon	上次成功登录
+Last failed logon	上次失败登录
+Longon script	登录脚本
+Profile path	配置文件路径
+Home directory	主目录
+Home directory drive	主目录驱动器
+Handle	句柄
+Object address	对象地址
+Granted access	授予访问权限
+File share access	文件共享访问
+Handle value	句柄值
+Handle count	句柄计数
+Reference count	引用计数
+Paged size	分页大小
+Nonpaged size	非分页大小
+&System variables	系统变量
+&User variables	用户变量
+New Environment Variable	新建环境变量
+Scope	范围
+Shadow Stack	阴影堆栈
+Heap Counters	堆计数器
+&Donate	捐赠
+&Group services by	服务分组方式
+&Load order group	加载顺序组
+&None	无
+&Svchost group	Svchost 组
+&Type	类型
+Highlight modified/COW pages	高亮已修改/写时复制页面
+Registe&rs	寄存器
+S&hadow stack...	阴影堆栈...
+Shadow stack...	阴影堆栈...
+Start t&ype	启动类型
+Unable to search for strings.	无法搜索字符串。
+Unable to show the process properties.	无法显示进程属性。
+Invalid value.	无效值。
+Unable to analyze the thread.	无法分析线程。
+Unable to change affinity settings.	无法更改相关性设置。
+Unable to compile the regular expression.	无法编译正则表达式。
+Unable to detach the debugger.	无法从调试器分离。
+Unable to open key.	无法打开注册表项。
+Unable to open the file location.	无法打开文件所在位置。
+Unable to open the file properties.	无法打开文件属性。
+Unable to shadow session.	无法影子会话。
+Unable to update the length.	无法更新长度。
+The process does not exist.	进程不存在。
+Unable to create the file	无法创建文件
+Unable to create the window.	无法创建窗口。
+Unable to open the process	无法打开进程
+Unable to locate the file.	找不到文件。
+Unable to register window class.	无法注册窗口类。
+Unable to restart the computer.	无法重启计算机。
+Unable to set the environment variable.	无法设置环境变量。
+The service does not exist.	服务不存在。
+Unable to enumerate processes	无法枚举进程
+Unable to open the process.	无法打开进程。
+Unable to configure the boot application.	无法配置引导应用。
+Unable to open the thread.	无法打开线程。
+Unable to shut down the computer.	无法关闭计算机。
+Unable to delete the environment variable.	无法删除环境变量。
+Unable to edit memory	无法编辑内存
+Unable to edit the memory region.	无法编辑内存区域。
+Unable to execute the command.	无法执行命令。
+Unable to execute the program.	无法执行程序。
+Unable to open the token.	无法打开令牌。
+Unable to perform the scan	无法执行扫描
+Unable to close the TCP connection	无法关闭 TCP 连接
+Unable to configure the advanced boot options.	无法配置高级引导选项。
+Unable to load the stack.	无法加载堆栈。
+Unable to perform the operation.	无法执行操作。
+Unable to query heap information.	无法查询堆信息。
+Unable to query pagefile information.	无法查询页面文件信息。
+Unable to query the section.	无法查询节。
+Unable to read memory	无法读取内存
+Unable to remote control the session	无法远程控制会话
+Failed to get process start key.	获取进程启动键失败。
+Setting handle attributes requires a connection to the kernel driver.	设置句柄属性需要连接内核驱动。
+Unable to access the dump file	无法访问转储文件
+Unable to add the process to the job	无法将进程加入作业
+Unable to capture the thread shadow stack.	无法捕获线程阴影堆栈。
+Unable to change memory protection	无法更改内存保护
+Unable to change memory protection.	无法更改内存保护。
+Unable to change service configuration.	无法更改服务配置。
+Unable to change the thread critical status.	无法更改线程关键状态。
+Unable to clone the process	无法克隆进程
+Unable to close the window.	无法关闭窗口。
+Unable to commit detours transaction.	无法提交 detours 事务。
+Unable to configure termination policy.	无法配置终止策略。
+Unable to create a process structure for the selected process.	无法为所选进程创建进程结构。
+Unable to create live kernel dump.	无法创建实时内核转储。
+Unable to create the minidump	无法创建小型转储
+Unable to create the search thread	无法创建搜索线程
+Unable to create the service.	无法创建服务。
+Unable to determine whether the thread is waiting.	无法确定线程是否在等待。
+Unable to disable UIAccess flag.	无法禁用 UIAccess 标志。
+Unable to disconnect the session	无法断开会话
+Unable to duplicate the token.	无法复制令牌。
+Unable to empty the memory list.	无法清空内存列表。
+Unable to empty the region working set.	无法清空区域工作集。
+Unable to enumerate process handles	无法枚举进程句柄
+Unable to enumerate the CFG bitmap.	无法枚举 CFG 位图。
+Unable to find the memory region for the selected address.	无法为所选地址找到内存区域。
+Unable to hibernate the computer.	无法使计算机休眠。
+Unable to initialize desktop policy.	无法初始化桌面策略。
+Unable to load the settings file.	无法加载设置文件。
+Unable to locate routines.	找不到例程。
+Unable to locate the application directory.	找不到应用程序目录。
+Unable to lock the computer.	无法锁定计算机。
+Unable to log off the computer.	无法注销计算机。
+Unable to logoff the session	无法注销会话
+Unable to map a view of the section.	无法映射节视图。
+Unable to open the event	无法打开事件
+Unable to open the event pair	无法打开事件对
+Unable to open the semaphore	无法打开信号量
+Unable to open the thread	无法打开线程
+Unable to open the timer	无法打开计时器
+Unable to open the token	无法打开令牌
+Unable to query lock information.	无法查询锁信息。
+Unable to query the current affinity.	无法查询当前相关性。
+Unable to query the process.	无法查询进程。
+Unable to query the thread context.	无法查询线程上下文。
+Unable to refresh the stack.	无法刷新堆栈。
+Unable to replace Task Manager	无法替换任务管理器
+Unable to save application settings.	无法保存应用程序设置。
+Unable to save the live kernel dump.	无法保存实时内核转储。
+Unable to send the message	无法发送消息
+Unable to set the integrity label	无法设置完整性标签
+Unable to set the integrity level	无法设置完整性级别
+Unable to shutdown WSL instances.	无法关闭 WSL 实例。
+Unable to sleep the computer.	无法使计算机睡眠。
+Unable to start the program.	无法启动程序。
+Unable to terminate the job	无法终止作业
+Unable to terminate the process	无法终止进程
+Unable to terminate the task.	无法终止任务。
+Unable to unload the module	无法卸载模块
+Unable to write memory	无法写入内存
+Unidentified third party object.	无法识别的第三方对象。
+The process is not being debugged.	进程未被调试。
+You must select at least one CPU.	必须至少选择一个 CPU。
+The thread does not appear to be waiting.	线程似乎并未处于等待状态。
+The object is unnamed.	对象未命名。
+The section size is greater than 32 MB. Only the first 32 MB will be available.	节大小超过 32 MB，仅前 32 MB 可用。
+The minimum length must be at least 4.	最小长度至少为 4。
+At least one memory type (Private, Image, or Mapped) must be selected.	必须至少选择一种内存类型（专用、映像或已映射）。
+The minimum length is invalid.	最小长度无效。
+Enter a value between 0 and 64.	请输入 0 到 64 之间的值。
+Unknown error.	未知错误。
+You cannot remote control the current session.	无法远程控制当前会话。
+The binary path is empty.	二进制路径为空。
+Make sure System Informer is running with administrative privileges.	请确保 System Informer 以管理员权限运行。
+This node cannot be displayed because it is currently hidden by your active filter settings or preferences.	该节点无法显示，因为当前被活动的筛选设置或首选项隐藏。
+Unable to restart to firmware options.	无法重启到固件选项。
+Unable to unload	无法卸载
+Do you want to restart System Informer now?	是否立即重启 System Informer？
+One or more options you have changed requires a restart of System Informer.	您更改的部分选项需要重启 System Informer 才能生效。
+The 32-bit version of System Informer could not be located.	找不到 32 位版本的 System Informer。
+. Make sure System Informer is running with	. 请确保 System Informer 以
+A 64-bit dump will be created instead. Do you want to continue?	将改为创建 64 位转储。是否继续？
+An unknown error occurred.	发生未知错误。
+Command line options:	命令行选项:
+Do you want to clean up unused settings?	是否清理未使用的设置？
+Do you want to create a minidump in ProgramData\SystemInformer\CrashDumps?	是否在 ProgramData\SystemInformer\CrashDumps 中创建小型转储？
+Do you want to reset all settings and restart System Informer?	是否重置所有设置并重启 System Informer？
+Enable it in Options > General and restart System Informer.	在选项 > 常规中启用，然后重启 System Informer。
+If you select No, the settings system will not function properly.	若选择“否”，设置系统将无法正常工作。
+Kernel minidump of processes require administrative privileges.	进程内核小型转储需要管理员权限。
+Most features will not work correctly.	大部分功能将无法正常工作。
+Please check if there are any processes with an extremely large number of handles open.	请检查是否有进程打开了数量极多的句柄。
+Please run the 64-bit version of System Informer instead.	请改用 64 位版本的 System Informer。
+Plugins are not enabled.	插件未启用。
+System Informer's settings file is corrupt. Do you want to reset it?	System Informer 的设置文件已损坏。是否重置？
+The process has already terminated; only the process record is available.	进程已终止，仅提供进程记录。
+The value is outside the schema's supported values.	该值超出架构支持的值范围。
+This machine does not have UEFI support.	本机不支持 UEFI。
+To use plugins enable them in Options and restart System Informer.	要使用插件，请在选项中启用并重启 System Informer。
+Unable to %s thread %lu	无法 %s 线程 %lu
+Unable to close the TCP connection.	无法关闭 TCP 连接。
+Unable to configure this option.	无法配置此选项。
+Unable to create kernel minidump.	无法创建内核小型转储。
+Unable to destroy the heap	无法销毁堆
+Unable to enable option start as admin.	无法启用“以管理员身份启动”选项。
+Unable to enable start as admin.	无法启用以管理员身份启动。
+Unable to query 32bit heap information.	无法查询 32 位堆信息。
+Unable to search for handles because the total number of handles on the system is too large.	无法搜索句柄，因为系统句柄总数过大。
+Unable to start the execution alias with a process token.	无法使用进程令牌启动执行别名。
+Unable to unmap the section view at 0x%p	无法取消映射位于 0x%p 的节视图
+Unable to update affinity for thread(s)	无法更新线程相关性
+Unknown error	未知错误
+WARNING: You have not installed System Informer into a secure location.	警告：未将 System Informer 安装到安全位置。
+Warning.	警告。
+You are attempting to run the 32-bit version of System Informer on 64-bit Windows.	您正在 64 位 Windows 上运行 32 位版本的 System Informer。
+You need to enable at minimum one tray icon (View menu > Tray Icons) before enabling the hide option.	启用隐藏选项前，至少需要启用一个托盘图标（视图菜单 > 托盘图标）。
+You need to enable this option with administrative privileges.	需要管理员权限才能启用此选项。
+"%s" at position %zu.	“%s”位于位置 %zu。
+All files (*.*)	所有文件 (*.*)
+Protection	保护
+Thread	线程
+Desktop	桌面
+Limited	受限
+Unknown process	未知进程
+Unavailable	不可用
+Mapped file	映射文件
+Mapped image	映射映像
+Timeline	时间线
+Interactive	交互式
+Architecture	体系结构
+Symbol	符号
+Control and flags	控件与标志
+Time stamp	时间戳
+Allow	允许
+Committed	已提交
+Connect time	连接时间
+Control address	控件地址
+Count	计数
+Debug registers	调试寄存器
+End	结束
+Exit status	退出状态
+Exited	已退出
+File modified time	文件修改时间
+File size	文件大小
+Folder path	文件夹路径
+Frame address	帧地址
+Frame distance	帧距离
+General purpose	通用寄存器
+Granted access (symbolic)	已授予访问权限（符号）
+I/O other	I/O 其他
+I/O other bytes	I/O 其他字节
+I/O read bytes	I/O 读取字节
+I/O reads	I/O 读取
+I/O write bytes	I/O 写入字节
+I/O writes	I/O 写入
+Image coherency	映像一致性
+Inherited from	继承自
+Keep alive	保活
+Length	长度
+Line number	行号
+Maximum message size	最大消息大小
+Maximum segment size	最大段大小
+Power throttling	电源限制
+Principal	主体
+Receive buffer size	接收缓冲区大小
+References	引用数
+Registry path	注册表路径
+Result	结果
+Return address	返回地址
+Segments	段
+Stack address	堆栈地址
+Stack parameter #1	堆栈参数 #1
+Stack parameter #2	堆栈参数 #2
+Stack parameter #3	堆栈参数 #3
+Stack parameter #4	堆栈参数 #4
+Start key	启动键
+Token object path	令牌对象路径
+Use	用途
+Abandoned	已放弃
+Account (nltest)	账户 (nltest)
+Address family	地址族
+Allocation base	分配基址
+App ID	应用 ID
+Attached PID	附加 PID
+Attached process	附加进程
+Attached start key	附加启动键
+Audit	审核
+Author	作者
+Base priority (actual)	基准优先级（实际）
+Bitmap	位图
+Category	类别
+Client	客户端
+Code page	代码页
+Connection	连接
+Connection time	连接时间
+Contention count	争用计数
+Creation flags	创建标志
+Current directory	当前目录
+Duration	持续时间
+Driver Image	驱动映像
+Entries	条目
+Entry count	条目数
+Error mode	错误模式
+Filename	文件名
+Frame	帧
+Impersonation level	模拟级别
+Index	索引
+Language	语言
+Last input time	最后输入时间
+Link target	链接目标
+Lock count	锁计数
+Locked WS	锁定 WS
+Logon	登录
+Maximum	最大值
+Minimum	最小值
+Mode	模式
+Module name	模块名
+Namespace	命名空间
+Number	编号
+Object	对象
+Offset	偏移
+Parent PID	父 PID
+Parent console PID	父控制台 PID
+Password can set	可设置密码
+Password must set	必须设置密码
+Peak usage	峰值用量
+Process name	进程名
+Property	属性
+Provider	提供程序
+Register	寄存器
+Server	服务器
+Socket state	套接字状态
+Socket type	套接字类型
+Start	开始
+Start address	起始地址
+String	字符串
+Subprocesses	子进程
+Subsystem	子系统
+Thread name	线程名
+Timestamps	时间戳
+Token LUID	令牌 LUID
+Total WS	总计 WS
+Used	已用
+Virtualized	已虚拟化
+At mark	标记位置
+Catalog entry ID	目录条目 ID
+Client address	客户端地址
+Client display	客户端显示
+Client name	客户端名称
+Connected suspend	连接挂起
+Container ID	容器 ID
+Container passthru	容器直通
+DPI awareness	DPI 感知
+Disconnect time	断开时间
+Enclave base address	飞地基址
+Enclave size	飞地大小
+Enclave type	飞地类型
+Exclusive address use	独占地址使用
+General purpose (WOW64)	通用寄存器 (WOW64)
+Granted access (generic)	已授予访问权限（通用）
+Granted access (mask)	已授予访问权限（掩码）
+Group ID	组 ID
+Group type	组类型
+Header included	包含头部
+Identifier Authority	标识机构
+Interface list	接口列表
+Job Object ID	作业对象 ID
+Keep alive count	保活计数
+Keep alive interval	保活间隔
+Kernel stack usage	内核堆栈用量
+Kickoff time	启动时间
+Logoff time	注销时间
+Maximum coalesced size	最大合并大小
+Maximum send size	最大发送大小
+Maximum working set	最大工作集
+Memory available	可用内存
+Memory used	已用内存
+Minimum working set	最小工作集
+Original arrival interface	原始到达接口
+Original pages	原始页面
+Original protection	原始保护
+Paged	已分页
+Pending receive requests	挂起的接收请求
+Pending sends	挂起的发送
+Port Context	端口上下文
+Port scalability	端口可扩展性
+Position	位置
+Private bytes delta	专用字节增量
+Provider ID	提供程序 ID
+Provider flags	提供程序标志
+Region base	区域基址
+Region size	区域大小
+Region type	区域类型
+Sequence Number	序列号
+Service flags	服务标志
+Shared commit	共享提交
+Short user name	短用户名
+Signing level	签名级别
+Stack valid	堆栈有效
+Start address (Native)	起始地址（原生）
+Start address (symbolic)	起始地址（符号）
+Thread local storage	线程本地存储
+Timeout episodes	超时次数
+Timestamps enabled	启用时间戳
+Token logon Name	令牌登录名
+Unwind	展开
+Waiting exclusive count	独占等待计数
+Waiting shared count	共享等待计数
+Package name	包名
+Broadcast reception	广播接收
+Bytes in flight	在途字节
+Bytes received	已接收字节
+Bytes reordered	重排字节
+Bytes retransmitted	重传字节
+Bytes sent	已发送字节
+CET shadow stack	CET 阴影堆栈
+CFG target	CFG 目标
+Congestion algorithm	拥塞算法
+Congestion window	拥塞窗口
+Congestion-limited bytes	拥塞限制字节
+Congestion-limited episodes	拥塞限制次数
+Congestion-limited time	拥塞限制时间
+Connect timeout	连接超时
+Delay FIN ACK	延迟 FIN ACK
+Delivery available	可投递
+Don't fragment	不分片
+Don't route	不路由
+Duplicate ACKs	重复 ACK
+ECN negotiated	已协商 ECN
+Estimated round-trip	估计往返时间
+Expedited data	加急数据
+Fail on ICMP error	ICMP 错误时失败
+Fast open	快速打开
+Fast retransmits	快速重传
+I/O other delta	I/O 其他增量
+I/O reads delta	I/O 读取增量
+I/O total bytes	I/O 总字节
+I/O writes delta	I/O 写入增量
+IPv6 protection level	IPv6 保护级别
+IPv6-only	仅 IPv6
+Minimal round-trip	最小往返时间
+Multicast TTL	组播 TTL
+Multicast interface	组播接口
+Multicast loopback	组播回环
+No SYN retries	无 SYN 重试
+No checksum	无校验和
+No delay	无延迟
+OOB in line	带内带外数据
+Out-of-order packets	乱序数据包
+Pause accept	暂停接收
+Probe timeout episodes	探测超时次数
+Randomize port	随机化端口
+Receive ECN	接收 ECN
+Receive ICMP errors	接收 ICMP 错误
+Receive TTL	接收 TTL
+Receive arrival interface	接收到达接口
+Receive buffer	接收缓冲区
+Receive dest. address	接收目标地址
+Receive packet info	接收数据包信息
+Receive routing header	接收路由头
+Receive timeout	接收超时
+Receive type-of-service	接收服务类型
+Receive window	接收窗口
+Receive window size	接收窗口大小
+Receiver-limited bytes	接收方限制字节
+Receiver-limited episodes	接收方限制次数
+Receiver-limited time	接收方限制时间
+Recursion count	递归计数
+Recveive ext. packet info	接收扩展数据包信息
+Retry timeout	重试超时
+Retry timeout (precise)	重试超时（精确）
+Reuse address	复用地址
+Reuse unicast port	复用单播端口
+SYN retransmits	SYN 重传
+Send buffer size	发送缓冲区大小
+Send timeout	发送超时
+Send window	发送窗口
+Send window size	发送窗口大小
+Sender-limited bytes	发送方限制字节
+Sender-limited episodes	发送方限制次数
+Sender-limited time	发送方限制时间
+TCP state	TCP 状态
+Type-of-service	服务类型
+URG interpretation	URG 解释
+Unicast TTL	单播 TTL
+Unicast interface	单播接口
+Upper MTU bound	MTU 上限
+WFP redirect context	WFP 重定向上下文
+WFP redirect records	WFP 重定向记录
+RPC usage	RPC 用量
+High VTL	高 VTL
+CPU (kernel)	CPU（内核）
+CPU (user)	CPU（用户）
+CPU (relative)	CPU（相对）
+CPU (average)	CPU（平均）
+MTU discovery	MTU 发现
+Path MTU	路径 MTU
+TDI address device	TDI 地址设备
+TDI connection device	TDI 连接设备
+Task Id	任务 ID
+Thread Id	线程 ID
+OS context	OS 上下文
+No URG	无 URG
+Authentication LUID	认证 LUID
+Origin LUID	来源 LUID
+Yes	是
+No	否
+True	真
+False	假
+Make sure the Explorer executable file is present.	请确保 Explorer 可执行文件存在。
+Make sure the PE Viewer executable file is present.	请确保 PE Viewer 可执行文件存在。
+Unable to load kernel driver	无法加载内核驱动
+Reduced driver functionality	驱动功能受限
+Non-existent process (	不存在的进程（
+Thread is sending a USER message:	线程正在发送 USER 消息：
+Thread is waiting for an ALPC port:	线程正在等待 ALPC 端口：
+Unlimited	无限制
+Directory	目录
+Image digital signature support disabled.	映像数字签名支持已禁用。
+Text files (*.txt)	文本文件 (*.txt)
+Text files (*.txt;*.log)	文本文件 (*.txt;*.log)
+Comma-separated values (*.csv)	逗号分隔值 (*.csv)
+DLL files (*.dll)	DLL 文件 (*.dll)
+Dump files (*.dmp)	转储文件 (*.dmp)
+Binary files (*.bin)	二进制文件 (*.bin)
+Executable files (*.exe;*.dll;*.com;*.ocx;*.sys;*.scr;*.cpl;*.ax;*.acm;*.lib;*.winmd;*.mui;*.mun;*.efi;*.pdb)	可执行文件 (*.exe;*.dll;*.com;*.ocx;*.sys;*.scr;*.cpl;*.ax;*.acm;*.lib;*.winmd;*.mui;*.mun;*.efi;*.pdb)
+Programs (*.exe;*.pif;*.com;*.bat)	程序 (*.exe;*.pif;*.com;*.bat)
+Executable files (*.exe;*.pif;*.com;*.bat;*.cmd)	可执行文件 (*.exe;*.pif;*.com;*.bat;*.cmd)
+Executable files (*.exe;*.sys)	可执行文件 (*.exe;*.sys)
+Invalid	无效
+Full	完全
+(None)	（无）
+Processing stack frames...	正在处理堆栈帧…
+Loading symbols for image...	正在加载映像符号…
+Closed	已关闭
+Closing	正在关闭
+Active	活动
+ConnectQuery	连接查询
+Shadow	阴影
+Idle	空闲
+Down	已关闭
+Init	初始化
+Real time	实时
+Below normal	低于正常
+Above normal	高于正常
+Breakaway OK	可脱离
+Die on unhandled exception	未处理异常时终止
+Job memory	作业内存
+Job time	作业时间
+Kill on job close	关闭作业时终止
+Process memory	进程内存
+Process time	进程时间
+Scheduling class	调度类
+Silent breakaway OK	静默可脱离
+Working set minimum	工作集最小值
+Working set maximum	工作集最大值
+Display settings	显示设置
+Exit windows	退出 Windows
+Global atoms	全局原子
+Read clipboard	读取剪贴板
+System parameters	系统参数
+Write clipboard	写入剪贴板
+Light	轻量
+Secure (IUM)	安全 (IUM)
+Kernel module	内核模块
+Enclave module	飞地模块
+Static dependency	静态依赖
+Static forwarder dependency	静态转发依赖
+Dynamic forwarder dependency	动态转发依赖
+Delay load dependency	延迟加载依赖
+Dynamic	动态
+As image	作为映像
+As data	作为数据
+Enclave primary	飞地主模块
+Enclave dependency	飞地依赖
+Patch image	补丁映像
+Lowest	最低
+Very low	很低
+Unchecked	未检查
+Unsigned	未签名
+Process created	进程已创建
+Process terminated	进程已终止
+Service created	服务已创建
+Service terminated	服务已停止
+Service started	服务已启动
+Service continued	服务已继续
+Service paused	服务已暂停
+Service modified	服务已修改
+Device removed	设备已移除
+Device arrived	设备已到达
+Chip	芯片
+Proprietary	专有
+Row of chips	芯片行
+Die	裸片
+Local non-volatile	本地非易失
+No (Default)	否（默认）
+No (Full)	否（完整）
+No (Limited)	否（受限）
+Yes (Default)	是（默认）
+Yes (Full)	是（完整）
+Yes (Limited)	是（受限）
+Anonymous	匿名
+Delegation	委托
+Primary	主
+Domain	域
+Alias	别名
+WellKnownGroup	已知组
+DeletedAccount	已删除账户
+Label	标签
+Logon session	登录会话
+Service group name:	服务组名称：
+Run DLL target file:	运行 DLL 目标文件：
+COM target:	COM 目标：
+COM target file:	COM 目标文件：
+WMI Providers:	WMI 提供程序：
+Notes:	备注：
+Flags:	标志：
+Signer: %s	签名者：%s
+Signed.	已签名。
+Signature invalid.	签名无效。
+Image is probably packed (%lu %ls over %lu %ls).	映像可能已加壳（%lu 个 %ls，共 %lu 个 %ls）。
+Low image coherency: %.2f%%	映像一致性偏低：%.2f%%
+Console application	控制台应用
+Console host	控制台主机
+Package name: %s	包名：%s
+Process is a system process (TCB).	系统进程（TCB）。
+Process is being debugged.	正在被调试。
+Process is suspended.	已挂起。
+Process is in deep freeze (suspended).	深度冻结（已挂起）。
+Process is managed (.NET).	托管进程（.NET）。
+Process is default elevated.	默认提升。
+Process is full elevated.	完全提升。
+Process is limited elevated.	受限提升。
+Process is elevated.	已提升。
+Process is a Modern UI app.	现代 UI 应用。
+Process is in a job.	位于作业中。
+Process is 32-bit (WOW64).	32 位（WOW64）。
+Process is a protected process (PP/PPL).	受保护进程（PP/PPL）。
+Process is a secure isolated process (IUM).	安全隔离进程（IUM）。
+Process is a secure virtualization process (HVCI).	安全虚拟化进程（HVCI）。
+Process is a subsystem process.	子系统进程。
+Process is a packaged process.	打包进程。
+Process is a background process.	后台进程。
+Process is a cross session process.	跨会话进程。
+Process is a snapshot process.	快照进程。
+Process is power throttling (efficiency).	电源节流（效率模式）。
+Unknown Device	未知设备
+Unknown action	未知操作
+Unknown path	未知路径
+Unnamed	未命名
+CPU &usage	CPU &使用情况
+CPU &history	CPU &历史记录
+CPU usage (text)	CPU 使用情况（文本）
+IO usage (text)	IO 使用情况（文本）
+Commit usage (text)	提交量使用情况（文本）
+Physical usage (text)	物理内存使用情况（文本）
+System Informer icon (static)	System Informer 图标（静态）
+CPU history:	CPU 历史记录：
+Commit:	提交量：
+CPU usage:	CPU 使用情况：
+Dynamic code prohibited	禁止动态代码
+Dynamic code prohibited (per-thread)	禁止动态代码（按线程）
+Dynamic code downgradable	动态代码可降级
+Strict handle checks	严格句柄检查
+Win32k system calls disabled	禁用 Win32k 系统调用
+Win32k system calls (Audit)	Win32k 系统调用（审计）
+Extension points disabled	禁用扩展点
+Non-system fonts disabled	禁用非系统字体
+Prefer system32 images	优先 system32 映像
+System call filtering	系统调用过滤
+Payload restrictions	负载限制
+Child process creation disabled	禁止创建子进程
+SMT-thread branch target isolation	SMT 线程分支目标隔离
+Distinct security domain	独立安全域
+Restricted page combining	限制页面合并
+Memory disambiguation (SSBD)	内存消歧 (SSBD)
+Junction redirection protection / Audit	联接重定向保护 / 审计
+Junction redirection protection	联接重定向保护
+Junction redirection protection (Audit)	联接重定向保护（审计）
+ARM pointer authentication	ARM 指针身份验证
+Structured exception handling overwrite protection (SEHOP)	结构化异常处理覆盖保护 (SEHOP)
+Dynamically loaded code is not allowed to execute.	不允许执行动态加载的代码。
+Allows individual threads to opt out of the restrictions on dynamic code generation.	允许个别线程退出动态代码生成限制。
+Allow non-AppContainer processes to modify all of the dynamic code settings for the calling process, including relaxing dynamic code restrictions after they have been set.	允许非 AppContainer 进程修改调用进程的全部动态代码设置，包括在设置完成后放宽动态代码限制。
+An exception is raised when an invalid handle is used by the process.	进程使用无效句柄时引发异常。
+Win32k (GDI/USER) system calls are not allowed.	不允许 Win32k (GDI/USER) 系统调用。
+Win32k (GDI/USER) system calls will trigger an ETW event.	Win32k (GDI/USER) 系统调用将触发 ETW 事件。
+Legacy extension point DLLs cannot be loaded into the process. NOTE: Processes with uiAccess=true will automatically bypass this policy and inject legacy extension point DLLs regardless.	无法将旧版扩展点 DLL 加载到进程中。注意：uiAccess=true 的进程将自动绕过此策略，仍会注入旧版扩展点 DLL。
+Forces images to load from the System32 folder in which Windows is installed first, then from the application directory before the standard DLL search order.	强制映像先从 Windows 安装目录的 System32 文件夹加载，再从应用程序目录加载，优先于标准 DLL 搜索顺序。
+System call filtering is active.	系统调用过滤已启用。
+Child processes cannot be created by this process.	该进程无法创建子进程。
+Branch target pollution cross-SMT-thread in user mode is enabled.	已启用用户态跨 SMT 线程的分支目标污染隔离。
+Isolated security domain is enabled.	已启用隔离安全域。
+Disables all page combining for this process.	禁用该进程的所有页面合并。
+Memory disambiguation is enabled for this process.	已为该进程启用内存消歧。
+Prevents the process from following filesystem junctions created by non-admin users and logs the attempt.	阻止进程跟随非管理员用户创建的文件系统联接，并记录该尝试。
+Logs attempts by the process to follow filesystem junctions created by non-admin users.	记录进程跟随非管理员用户创建的文件系统联接的尝试。
+Pointer authentication (PAC) prevents unexpected changes to pointers.	指针身份验证 (PAC) 防止指针被意外修改。
+SEHOP prevents Structured Exception Handler (SEH) overwrites.	SEHOP 防止结构化异常处理程序 (SEH) 被覆盖。
+ATL thunk emulation is disabled.	已禁用 ATL thunk 模拟。
+Address Space Layout Randomization is enabled for this process.	已为该进程启用地址空间布局随机化。
+High entropy randomization is enabled.	已启用高熵随机化。
+All images are being forcibly relocated (regardless of whether they support ASLR).	所有映像都被强制重定位（无论是否支持 ASLR）。
+Images with stripped relocation data are disallowed.	不允许加载已剥离重定位数据的映像。
+Extended Control Flow Guard (XFG) is enabled for the process.	已为进程启用扩展控制流防护 (XFG)。
+Audit XFG : XFG is running in audit mode.	审计 XFG：XFG 运行于审计模式。
+Strict XFG : only XFG modules can be loaded.	严格 XFG：仅可加载 XFG 模块。
+Dll Exports can be marked as XFG invalid targets.	DLL 导出可被标记为 XFG 无效目标。
+Control Flow Guard (CFG) is enabled for the process.	已为进程启用控制流防护 (CFG)。
+Strict CFG : only CFG modules can be loaded.	严格 CFG：仅可加载 CFG 模块。
+Dll Exports can be marked as CFG invalid targets.	DLL 导出可被标记为 CFG 无效目标。
+Image signature restrictions are enabled for this process.	已为该进程启用映像签名限制。
+Only Microsoft signatures are allowed.	仅允许 Microsoft 签名。
+Only Windows Store signatures are allowed.	仅允许 Windows 应用商店签名。
+This is an opt-in restriction.	这是一项自愿启用的限制。
+Non-system fonts cannot be used in this process.	该进程无法使用非系统字体。
+Loading a non-system font in this process will trigger an ETW event.	在该进程中加载非系统字体将触发 ETW 事件。
+Remotely located images cannot be loaded into the process.	无法将远程位置的映像加载到进程中。
+Images with a Low mandatory label cannot be loaded into the process.	无法加载低强制标签的映像。
+Payload restrictions are enabled for this process.	已为该进程启用负载限制。
+Export Address Filtering is enabled.	已启用导出地址过滤。
+Export Address Filtering (Plus) is enabled.	已启用导出地址过滤（Plus）。
+Import Address Filtering is enabled.	已启用导入地址过滤。
+StackPivot is enabled.	已启用 StackPivot。
+CallerCheck is enabled.	已启用 CallerCheck。
+SimExec is enabled.	已启用 SimExec。
+The CPU verifies function return addresses at runtime by employing a hardware-enforced shadow stack.	CPU 在运行时通过硬件强制影子栈校验函数返回地址。
+Audit Stack protection : log ROP failures to event log.	审计栈保护：将 ROP 失败记录到事件日志。
+Strict Stack protection : any detected ROP will cause the process to terminate.	严格栈保护：检测到任何 ROP 都将导致进程终止。
+Audit Set Context IP validation : log modifications of context IP to event log.	审计上下文 IP 校验：将上下文 IP 的修改记录到事件日志。
+Set Context IP validation : any detected modification of context IP will cause the process to terminate.	上下文 IP 校验：检测到任何上下文 IP 修改都将导致进程终止。
+Audit Block non CET binaries : log attempts to load binaries without CET support.	审计阻止非 CET 二进制：记录加载无 CET 支持二进制的尝试。
+Block binaries without CET support	阻止无 CET 支持的二进制
+Block binaries without CET support or without EH continuation metadata.	阻止无 CET 支持或无 EH 延续元数据的二进制。
+Do you want to	是否要
+Are you sure you want to continue?	确定要继续吗？
+Are you sure you want to %s?	确定要 %s 吗？
+Eco mode for this process	该进程的节能模式
+Terminating a process will cause unsaved data to be lost.	终止进程会导致未保存的数据丢失。
+Terminating a process tree will cause the process and its descendants to be terminated.	终止进程树将导致该进程及其所有子进程被终止。
+Suspending a process tree will cause the process and its descendants to be suspended.	挂起进程树将导致该进程及其所有子进程被挂起。
+Resuming a process tree will cause the process and its descendants to be resumed.	恢复进程树将导致该进程及其所有子进程被恢复。
+Freezing does not persist after exiting System Informer.	退出 System Informer 后冻结状态不会保留。
+If the process ends, the operating system will shut down immediately.	如果该进程结束，操作系统将立即关闭。
+Eco mode will lower process priority and improve power efficiency but may cause instability in some processes.	节能模式会降低进程优先级并提升能效，但可能导致某些进程不稳定。
+The process continues to run instead of being suspended or terminated by process lifetime management (PLM).	进程将继续运行，而不会被进程生命周期管理 (PLM) 挂起或终止。
+Closing handles may cause system instability and data corruption.	关闭句柄可能导致系统不稳定和数据损坏。
+You are about to close one or more handles for a critical process with strict handle checks enabled. This will shut down the operating system immediately.	你即将关闭一个启用了严格句柄检查的关键进程的一个或多个句柄。这将立即关闭操作系统。
+Unable to %s %s (PID %lu)	无法 %s %s（PID %lu）
+Unable to %s %s	无法 %s %s
+Unable to %s %s.	无法 %s %s。
+Unable to terminate	无法终止
+Unable to suspend	无法挂起
+Unable to resume	无法恢复
+Unable to set the I/O priority of	无法设置以下进程的 I/O 优先级
+Unable to set the priority class of	无法设置以下进程的优先级类
+Unable to start	无法启动
+Unable to continue	无法继续
+Unable to pause	无法暂停
+Unable to stop	无法停止
+Unable to delete	无法删除
+Unable to restart	无法重启
+Unable to terminate thread %lu	无法终止线程 %lu
+Unable to suspend thread %lu	无法挂起线程 %lu
+Unable to resume thread %lu	无法恢复线程 %lu
+Unable to set the I/O priority of thread %lu	无法设置线程 %lu 的 I/O 优先级
+Unable to close "%s"	无法关闭 "%s"
+Unable to empty working sets.	无法清空工作集。
+Unable to empty modified page lists.	无法清空修改页列表。
+Unable to empty standby lists.	无法清空备用列表。
+Unable to empty priority 0 standby list.	无法清空优先级 0 备用列表。
+Unable to combine memory pages.	无法合并内存页。
+Unable to empty compression stores.	无法清空压缩存储。
+Unable to empty registry cache.	无法清空注册表缓存。
+Unable to empty system file cache.	无法清空系统文件缓存。
+Unable to flush volume file cache.	无法刷新卷文件缓存。
+Unable to change affinity of process %lu	无法更改进程 %lu 的相关性
+Unable to change affinity of thread %lu	无法更改线程 %lu 的相关性
+Unable to determine why the thread is waiting.	无法确定线程等待的原因。
+Unable to load the following plugin(s)	无法加载以下插件
+Unable to query environment information:	无法查询环境信息：
+Unable to query provider information:	无法查询提供程序信息：
+Unable to connect to the session	无法连接到会话
+Unable to %s one or more %s:	无法 %s 一个或多个 %s：
+Unable to %s handle "%s" (%s)%s	无法 %s 句柄 "%s" (%s)%s
+Unable to %s handle %s%s	无法 %s 句柄 %s%s
+Unable to free the memory region	无法释放内存区域
+Unable to decommit the memory region	无法取消提交内存区域
+Unable to unmap the section view	无法取消映射节视图
+Unable to create the minidump.	无法创建小型转储。
+Failed to access the dynamic configuration.	无法访问动态配置。
+Failed to activate the dynamic configuration.	无法激活动态配置。
+Try again with alternate driver load method?	尝试使用备用驱动加载方法重试？
+Kernel driver loaded	内核驱动已加载
+Unable to load the kernel driver service.	无法加载内核驱动服务。
+Unable to restart.	无法重启。
+The kernel driver is not supported on this architecture.	此架构不支持该内核驱动。
+You will be unable to use more advanced features, view details about system processes or terminate malicious software.	你将无法使用更多高级功能、查看系统进程详情或终止恶意软件。
+Service Stopped	服务已停止
+Service Deleted	服务已删除
+The service	服务
+) was created	）已创建
+) was started	）已启动
+) was stopped	）已停止
+) was modified	）已修改
+) was deleted	）已删除
+Target:	目标：
+Target PID:	目标 PID：
+Access:	访问：
+, Access:	，访问：
+, Kernel handle: Yes	，内核句柄：是
+, Classification:	，分类：
+, Size:	，大小：
+Index:	索引：
+Query:	查询：
+, Length:	，长度：
+Source PID:	源 PID：
+, Dest PID:	，目标 PID：
+Offset:	偏移：
+Class:	类别：
+, Dest:	，目标：
+, Exclusive:	，独占：
+, HostSilo: Yes	，HostSilo：是
+), Access:	），访问：
+), Source PID:	），源 PID：
+Thread is waiting on system call:	线程正在等待系统调用：
+Thread is waiting for:	线程正在等待：
+Thread is waiting for multiple (%lu) objects.	线程正在等待多个（%lu）对象。
+Thread is waiting for file I/O:	线程正在等待文件 I/O：
+Thread is processing Win32k CoreMessaging queue completions.	线程正在处理 Win32k CoreMessaging 队列完成项。
+Thread is waiting for an I/O completion port:	线程正在等待 I/O 完成端口：
+Thread is sleeping. Timeout: %lu milliseconds.	线程正在睡眠。超时：%lu 毫秒。
+Thread is sleeping. Timeout: %llu milliseconds.	线程正在睡眠。超时：%llu 毫秒。
+Thread is sleeping.	线程正在睡眠。
+Thread is waiting for an I/O control request:	线程正在等待 I/O 控制请求：
+Thread is waiting for a FS control request:	线程正在等待 FS 控制请求：
+Thread is querying an object:	线程正在查询对象：
+Thread is waiting (%s) for an event pair:	线程正在（%s）等待事件对：
+Thread is waiting for a USER message.	线程正在等待 USER 消息。
+Unknown.	未知。
+Thread is waiting for a debug event:	线程正在等待调试事件：
+Thread is waiting (%s) for a keyed event (key 0x%Ix):	线程正在（%s）等待键控事件（键 0x%Ix）：
+Thread is waiting (%s) for:	线程正在（%s）等待：
+Thread is waiting for work from a worker factory:	线程正在等待辅助工厂的工作项：
+Thread is waiting (%s, %s) for:	线程正在（%s, %s）等待：
+Thread is waiting for multiple objects.	线程正在等待多个对象。
+Select a system debugger to use for this process:	选择用于此进程的系统调试器：
+You can choose from the installed debugging tools below.	你可以从下方已安装的调试工具中选择。
+Select the process activity moderation throttling state.	选择进程活动调节节流状态。
+Terminating a thread may cause the process to stop working.	终止线程可能导致进程停止工作。
+Unloading a module may cause the process to crash.	卸载模块可能导致进程崩溃。
+Unloading a module may cause the process to crash. NOTE: This feature may not work correctly on your version of Windows and some programs may restrict access or ban your account.	卸载模块可能导致进程崩溃。注意：此功能在当前 Windows 版本上可能无法正常工作，部分程序可能限制访问或封禁账号。
+Unloading a driver may cause system instability.	卸载驱动可能导致系统不稳定。
+Unmapping a section view may cause the process to crash.	取消映射节视图可能导致进程崩溃。
+Scanning (%s)...	正在扫描（%s）…
+Starting a service might prevent the system from functioning properly.	启动服务可能导致系统无法正常运行。
+Continuing a service might prevent the system from functioning properly.	继续服务可能导致系统无法正常运行。
+Pausing a service might prevent the system from functioning properly.	暂停服务可能导致系统无法正常运行。
+Stopping a service might prevent the system from functioning properly.	停止服务可能导致系统无法正常运行。
+Restarting a service might prevent the system from functioning properly.	重启服务可能导致系统无法正常运行。
+No events to display.	暂无事件可显示。
+Terminating a job will terminate all processes assigned to it.	终止作业将终止分配给它的所有进程。
+Select a process to add to the job permanently.	选择一个要永久添加到作业的进程。
+Live kernel dump has been created.	实时内核转储已创建。
+Processing live kernel dump...	正在处理实时内核转储…
+Initializing the minidump...	正在初始化小型转储…
+Finalizing the minidump...	正在完成小型转储…
+Minidump complete.	小型转储完成。
+Go to t&hread...	转到线程...
+Driver warnings are disabled.	驱动警告已禁用。
+The dynamic configuration was not found.	未找到动态配置。
+The kernel driver was not found.	未找到内核驱动。
+The last System Informer update requires a reboot.	上次 System Informer 更新需要重启。
+Initializing System Informer kernel driver...	正在初始化 System Informer 内核驱动…
+Platform support pending review.	平台支持待审核。
+Checking for pending platform update...	正在检查待处理的平台更新…
+Kernel version not supported	内核版本不受支持
+# ============================================================
+# [15] 运行期采集回填（4.0 Debug64 --collect 未命中；3.2 json 复用 + 源码/rc 核定）
+#   第一批：Options 高亮面板标签/tooltip、3.2 现成译文；第二批：插件名/描述/选项页。
+#   重跑 organize.py 会覆盖本文件：需从 zh_dict.extra.txt 重新并入。
+# ============================================================
+.NET Tools	.NET 工具
+32-bit processes	32 位进程
+Add/Update	添加/更新
+Adds .NET performance counters, assembly information, thread stack support, and more.	添加 .NET 性能计数器、程序集信息、线程堆栈支持等。
+Adds a Toolbar, Status Bar and Search box.	添加工具栏、状态栏和搜索框。
+Alert by thread ID	按线程 ID 警报
+Allows files to be checked with online services.	允许使用在线服务检查文件。
+Allows the user to add comments for processes and services, save process priority and affinity, highlight individual processes and show processes collapsed by default.	允许用户为进程和服务添加备注，保存进程优先级和亲和性，高亮单个进程，并默认折叠显示进程。
+API key:	API 密钥：
+Automatic scanning	自动扫描
+Automatic submission	自动提交
+BackColor	背景色
+Background processes	后台进程
+Calls	调用次数
+CFG pages	CFG 页
+Change	更改
+Changes to settings will require a restart of System Informer.	更改设置后需要重启 System Informer。
+Check for updates automatically	自动检查更新
+Client configuration	客户端配置
+CMD variables	CMD 变量
+Collapse	折叠
+Collapse services on start	启动时折叠服务
+Connected agents	已连接的代理
+CPU kernel	CPU 内核
+CPU user	CPU 用户
+Current database configuration values:	当前数据库配置值：
+Dangerous flag	危险标志
+Debugged processes	被调试进程
+Default namespace	默认命名空间
+Delay execution	延迟执行
+Disabled by default	默认禁用
+Disk Drives	磁盘驱动器
+Elevated	已提升
+Elevated processes	提升权限进程
+Enable Disk and Network graphs	启用磁盘和网络图表
+Enable Disk and Network monitoring	启用磁盘和网络监视
+Enable FPS monitoring	启用 FPS 监视
+Enable GPU monitoring	启用 GPU 监视
+Enable NPU monitoring	启用 NPU 监视
+Enable per-process GPU adapter statistics	启用按进程的 GPU 适配器统计
+Enable scanning	启用扫描
+Enabled by default	默认启用
+Exclude	排除
+Execute pages	可执行页
+Executive	执行体
+Exposes System Informer's process data and actions to AI agents over the Model Context Protocol.	通过模型上下文协议（MCP）向 AI 代理开放 System Informer 的进程数据与操作。
+Extended functionality for Windows 7 and above, including ETW, GPU, Disk and Firewall monitoring tabs.	为 Windows 7 及以上版本提供扩展功能，包括 ETW、GPU、磁盘和防火墙监视选项卡。
+Extended Notifications	扩展通知
+Extended Services	扩展服务
+Extended Tools	扩展工具
+Extends service management capabilities.	扩展服务管理功能。
+Filtered processes	受过滤进程
+Filters notifications.	过滤通知。
+GPU/NPU temperature unit:	GPU/NPU 温度单位：
+GUI threads	GUI 线程
+Hardware Devices	硬件设备
+Highlight executive waits in the Threads list.	在线程列表中高亮执行体等待。
+Highlight system environment variables in the Environment page.	在环境变量页中高亮系统环境变量。
+I/O R+O	I/O 读+其他
+I/O W	I/O 写
+Id	ID
+Include	包含
+IO priority	IO 优先级
+Job processes	作业进程
+Launcher	启动程序
+Network Adapters	网络适配器
+No agents connected.	暂无已连接的代理。
+Normal flag	常规标志
+Note: FPS monitoring requires either administrative privileges or the current user a member of the "Performance Log Users" group.	注意：FPS 监视需要管理员权限，或当前用户属于“Performance Log Users”组。
+Own processes	当前用户进程
+Partially suspended processes and threads	部分挂起进程和线程
+Pico processes	Pico 进程
+Plugin for checking new System Informer releases via the Help menu.	通过「帮助」菜单检查 System Informer 新版本的插件。
+Plugin for monitoring hardware devices like Disk drives and Network adapters via the System Information window.	通过系统信息窗口监视磁盘驱动器、网络适配器等硬件设备的插件。
+Power efficiency	电源效率
+Private pages	私有页
+Process environment	进程环境变量
+Protected processes	受保护进程
+Provides ping, traceroute and whois for network connections.	为网络连接提供 Ping、路由跟踪和 Whois 功能。
+Queue	队列
+RAPL Drives	RAPL 设备
+Regex matched against the full file path; automatic scanning only.	对完整文件路径匹配正则；仅自动扫描时生效。
+Removed privilege	已移除权限
+Revoke grants	撤销授权
+Run in a terminal.	在终端中运行。
+Scan exclusions	扫描排除项
+Select disk devices to show on the system information window:	选择要在系统信息窗口中显示的磁盘设备：
+Select energy devices to show on the system information window:	选择要在系统信息窗口中显示的能耗设备：
+Select network devices to show on the system information window:	选择要在系统信息窗口中显示的网络设备：
+Service processes	服务进程
+Session grants	会话授权
+Show hidden adapters	显示隐藏适配器
+Show hidden devices	显示隐藏设备
+Show physical adapters	显示物理适配器
+Show update notifications instead of update prompts	显示更新通知，而非更新提示框
+Show update prompt before main window	在主窗口前显示更新提示
+Skip check for updates and search automatically	跳过更新检查并自动搜索
+Startup delay (seconds):	启动延迟（秒）：
+Subsystem process	子系统进程
+Suspended	已挂起
+Suspended processes and threads	已挂起进程和线程
+System environment	系统环境变量
+System pages	系统页
+System processes	系统进程
+Token groups or privileges that are enabled.	已启用的令牌组或权限。
+Toolbar	工具栏
+Toolbar and Status Bar	工具栏和状态栏
+UIAccess processes	UIAccess 进程
+Unset - optional	未设置（可选）
+Untrusted modules	不受信任模块
+Update Checker	更新检查器
+User environment	用户环境变量
+User request	用户请求
+You can configure processes for which notifications are displayed. Wildcards can be used, and ordering is considered.	你可以配置需要显示通知的进程。支持通配符，并按顺序匹配。
+You can configure services for which notifications are displayed. Wildcards can be used, and ordering is considered.	你可以配置需要显示通知的服务。支持通配符，并按顺序匹配。
+Tool	工具
+Efficiency	效率
+# [16] 右键/主菜单 + 对话框静态串（4.0 静态缺口核定）
+&One graph per row	每行一个图表
+&Two graphs per row	每行两个图表
+Boot Configuration &Log	启动配置日志
+Ca&ncel I/O	取消 I/O
+Cache &Latency	缓存延迟
+Check for &updates	检查更新
+Col&lapse by default	默认折叠
+Configure IO priority for executable...	为可执行文件配置 IO 优先级...
+Configure page priority for executable...	为可执行文件配置页面优先级...
+Configure priority for executable...	为可执行文件配置优先级...
+Default IME highlight color...	默认 IME 高亮颜色...
+Deskto&p Windows...	桌面窗口...
+Firm&ware Table	固件表
+Graphics priority...	图形优先级...
+Highlight default IME windows	高亮默认 IME 窗口
+Highlight lower filtered	高亮下层筛选设备
+Highlight upper filtered	高亮上层筛选设备
+Poo&l Table	池表
+Power &Forecast	功耗预测
+Save &for this command line	为此命令行保存
+Scan failed.	扫描失败。
+Set &affinity	设置亲和性
+Set &boost	设置提升
+Set &efficiency mode	设置效率模式
+Show device interfaces	显示设备接口
+Show disabled device interfaces	显示已禁用的设备接口
+Show disconnected devices	显示已断开设备
+Show software components	显示软件组件
+SM&BIOS	SMBIOS
+Sort child devices	对子设备排序
+Sort root devices	对根设备排序
+Upload file to &Filescan...	上传文件到 Filescan...
+Upload file to &Hybrid-Analysis...	上传文件到 Hybrid-Analysis...
+Upload file to &Jotti...	上传文件到 Jotti...
+Upload file to &VirusTotal...	上传文件到 VirusTotal...
+Wait Chain Tra&versal	等待链遍历
+# [17] 属性页/列表列头标签（4.0 静态缺口核定）
+Bits	位数
+Comments	注释
+Commit	提交
+Data	数据
+Date	日期
+ImageBase	映像基址
+PID (Hex)	PID (十六进制)
+# [18] 硬件设备/网络适配器属性页标签（4.0 静态缺口核定）
+Class name	类名
+Default service	默认服务
+Device name	设备名称
+Driver INF	驱动程序 INF
+Driver INF section	驱动程序 INF 节
+Driver description	驱动程序描述
+Driver provider	驱动程序提供商
+First installed	首次安装
+Hardware IDs	硬件 ID
+IPv4 DNS address	IPv4 DNS 地址
+IPv4 address	IPv4 地址
+IPv4 default gateway	IPv4 默认网关
+IPv4 subnet mask	IPv4 子网掩码
+IPv6 DNS address	IPv6 DNS 地址
+IPv6 address	IPv6 地址
+IPv6 address (temporary)	IPv6 地址（临时）
+IPv6 default gateway	IPv6 默认网关
+Installer	安装程序
+Instance ID	实例 ID
+Last arrival	上次接入
+Last removal	上次移除
+Link speed	链路速度
+Location info	位置信息
+Location paths	位置路径
+Matching ID	匹配 ID
+PDO name	PDO 名称
+Parent instance ID	父实例 ID
+Problem code	问题代码
+Problem description	问题描述
+Problem status	问题状态
+Property page provider	属性页提供程序
+Receive discards	接收丢弃
+Receive errors	接收错误
+Received	已接收
+Received packets	已接收数据包
+Receiving	接收中
+Resource type	资源类型
+Security descriptor	安全描述符
+Send discards	发送丢弃
+Send errors	发送错误
+Sending	发送中
+Sent	已发送
+Sent packets	已发送数据包
+Setting	设置
+Total discards	总丢弃
+Total errors	总错误
+Total packets	总数据包
+Utilization	使用率
+# [19] 窗口探索器属性页标签（4.0 静态缺口核定）
+Atom	原子
+Automation and accessibility	自动化与辅助功能
+Automation server	自动化服务器
+Background brush	背景画刷
+Base name	基名
+Behavior and styles	行为与样式
+Class metadata	类元数据
+Client rectangle	客户区矩形
+Cloaked	已隐藏
+Control styles	控件样式
+Cursor handle	光标句柄
+DPI Context	DPI 上下文
+Dialog control ID	对话框控件 ID
+Dialog procedure	对话框过程
+Drop shadow	投影
+Exclusive ownership	独占所有权
+Extended styles	扩展样式
+Font	字体
+Geometry and state	几何与状态
+IME Window	IME 窗口
+Identity	标识
+Instance handle	实例句柄
+Large icon handle	大图标句柄
+Menu handle	菜单句柄
+Menu name	菜单名
+Normal rectangle	普通矩形
+Rectangle	矩形
+Save bits	保存位
+Small icon handle	小图标句柄
+Styles	样式
+Text	文本
+Top level	顶层
+User data	用户数据
+Window extra bytes	窗口额外字节
+Window handle	窗口句柄
+Window message-only	仅消息窗口
+Window procedure	窗口过程
+Window text	窗口文本
+Window unique id	窗口唯一 ID
+# [20] 池表/管道/等待链/功耗网格列头（4.0 静态缺口核定）
+Alertable	可警报
+Allocations (delta)	分配（差值）
+Allocations (total)	分配（总计）
+Block duration	阻塞时长
+Bytes (delta)	字节（差值）
+Bytes (total)	字节（总计）
+Checksum	校验和
+Completion mode	完成模式
+Configuration	配置
+Current (delta)	当前（差值）
+Current (total)	当前（总计）
+Current instances	当前实例数
+Data Length	数据长度
+Data size	数据大小
+File index	文件索引
+Frees (delta)	释放（差值）
+Frees (total)	释放（总计）
+Guid Name	GUID 名称
+Low impact	低影响
+Max instances	最大实例数
+Non-paged allocations (delta)	非分页分配（差值）
+Non-paged allocations (total)	非分页分配（总计）
+Non-paged bytes (delta)	非分页字节（差值）
+Non-paged bytes (total)	非分页字节（总计）
+Non-paged current (delta)	非分页当前（差值）
+Non-paged current (total)	非分页当前（总计）
+Non-paged frees (delta)	非分页释放（差值）
+Non-paged frees (total)	非分页释放（总计）
+NonPaged	非分页
+Object identifier	对象标识符
+Outbound quota	出站配额
+Paged allocations (delta)	分页分配（差值）
+Paged allocations (total)	分页分配（总计）
+Paged bytes (delta)	分页字节（差值）
+Paged bytes (total)	分页字节（总计）
+Paged current (delta)	分页当前（差值）
+Paged current (total)	分页当前（总计）
+Paged frees (delta)	分页释放（差值）
+Paged frees (total)	分页释放（总计）
+PnP Devices	即插即用设备
+ProcessId	进程 ID
+Read data available	可读数据
+Read mode	读取模式
+Remote clients	远程客户端
+Reparse tag	重解析标记
+SecurityID	安全 ID
+Severity	严重级别
+Starts in	起始于
+Tag Name	标记名
+Target	目标
+ThreadId	线程 ID
+Timeout	超时
+Trigger	触发器
+Volume	卷
+WaitTime	等待时间
+# [21] 对象/句柄属性页标签（4.0 静态缺口核定）
+Basic information	基本信息
+Default NP Charge	默认非分页配额
+Default Paged Charge	默认分页配额
+Driver Flags	驱动标志
+Driver Service Name	驱动服务名
+Driver Size	驱动大小
+Driver Start Address	驱动起始地址
+Generic All	全部
+Generic Execute	执行
+Generic Read	读取
+Generic Write	写入
+Heap size	堆大小
+Input	输入
+Input desktop	输入桌面
+Invalid Attributes	无效属性
+Lower-edge driver	下层边缘驱动
+Lower-edge driver image	下层边缘驱动映像
+Non-paged	非分页
+Objects	对象
+Peak Handles	峰值句柄
+Peak Objects	峰值对象
+PnP Device Name	PnP 设备名
+Pool Type	池类型
+Quota charges	配额占用
+Session Name	会话名
+Upper-edge driver	上层边缘驱动
+Upper-edge driver Image	上层边缘驱动映像
+User SID	用户 SID
+Valid Access Mask	有效访问掩码
+# [22] 固件证书页标签（4.0 静态缺口核定）
+Issuer	颁发者
+Serial number	序列号
+Signature owner	签名所有者
+Signature type	签名类型
+Subject	主体
+Thumbprint	指纹
+Thumbprint (SHA1)	指纹 (SHA1)
+Valid from	生效起始
+Valid to	生效截止
+Variable	变量
+# [23] WBCL/TPM/重解析点标签（4.0 静态缺口核定）
+Auth rights	授权权限
+Digest	摘要
+Digest value	摘要值
+Event size	事件大小
+Event type	事件类型
+Hash	哈希
+Owner rights	所有者权限
+PCR after event	事件后 PCR
+PCR index	PCR 索引
+PCR state	PCR 状态
+Platform rights	平台权限
+# [24] 令牌/程序集/卸载 DLL 零星标签（4.0 静态缺口核定）
+HWID (Publisher)	HWID（发布者）
+HWID (User)	HWID（用户）
+ModifiedId LUID	修改 ID LUID
+Native image path	本机映像路径
+No.	序号
+Structure	结构
+Token SDDL	令牌 SDDL
+TrustLevel Name	信任级别名称
+TrustLevel Sid	信任级别 SID
+
+# [25] 磁盘/网络追踪/指令指针列头（4.0 静态缺口核定）
+Best	最佳
+Hostname	主机名
+IP Address	IP 地址
+Instruction	指令指针
+Process ID	进程 ID
+Raw	原始值
+Raw (Hex)	原始值 (十六进制)
+Time 1	时间 1
+Time 2	时间 2
+Time 3	时间 3
+Time 4	时间 4
+Send to	发送到
+Physical memory history	物理内存历史
+Commit charge history	提交内存历史
+GPU history	GPU 历史
+GPU history (Unavailable)	GPU 历史（不可用）
+NPU history	NPU 历史
+NPU history (Unavailable)	NPU 历史（不可用）
+Disk history	磁盘历史
+Disk history (Unavailable)	磁盘历史（不可用）
+Network history	网络历史
+Network history (Unavailable)	网络历史（不可用）
+Upload file to Filescan...	上传文件到 Filescan...
+Upload file to Hybrid-Analysis...	上传文件到 Hybrid-Analysis...
+Upload file to VirusTotal...	上传文件到 VirusTotal...
+Upload file to Jotti...	上传文件到 Jotti...
+Online Checks	在线检查
+Customize Toolbar	自定义工具栏
+Available toolbar buttons:	可用工具栏按钮：
+Current toolbar buttons:	当前工具栏按钮：
+Add >	添加 >
+< Remove	< 移除
+Text options:	文本选项：
+No text labels	不显示文本标签
+Selective text	选择性文本
+Show text labels	显示文本标签
+Always show	始终显示
+Hide when inactive (Ctrl+K)	不活动时隐藏（Ctrl+K）
+Search box:	搜索框：
+Enable modern icons	启用现代图标
+Customize Status Bar	自定义状态栏
+Available status bar entries:	可用状态栏条目：
+Current status bar entries:	当前状态栏条目：
+Toolbar configuration	工具栏配置
+Taskbar configuration	任务栏配置
+Enable toolbar	启用工具栏
+Enable status bar	启用状态栏
+Resolve ghost windows to hung windows	将幽灵窗口视为挂起窗口
+Auto-hide main menu (Alt or F10 key toggle)	自动隐藏主菜单（Alt 或 F10 切换）
+Enable toolbar menu bar	启用工具栏菜单栏
+Enable auto focus to search box	自动聚焦搜索框
+Enable large toolbar icons	启用大工具栏图标
+Use screen overlay when finding windows	查找窗口时使用屏幕覆盖层
+Use snapshot picker when finding windows	查找窗口时使用快照选取器
+Note: Right-click the toolbar on the main window to customize the icons and graphs.	注意：在主窗口工具栏上点击右键即可自定义图标和图表。
+Select the graph to show on the taskbar:	选择要在任务栏上显示的图表：
+New processes	新进程
+Terminated processes	已终止进程
+New services	新服务
+Started services	已启动的服务
+Stopped services	已停止的服务
+Deleted services	已删除的服务
+Modified services	已修改的服务
+Arrived devices	到达的设备
+Removed devices	移除的设备
+You can configure devices for which notifications are displayed. Wildcards can be used, and ordering is considered.	你可以配置需要显示通知的设备。支持通配符，并按顺序匹配。
+Examples: USB* *Keyboard*	示例：USB* *Keyboard*
+Examples: Wdi* seclogon	示例：Wdi* seclogon
+Low image coherency	映像一致性低
+.NET modules	.NET 模块
+Immersive modules	沉浸式模块
+Relocated modules	重定位模块
+Known DLLs	已知 DLL
+Native modules	本机模块
+Mapped modules	映射模块
+Immersive processes and DLLs	沉浸式进程与 DLL
+.NET processes and DLLs	.NET 进程与 DLL
+Packed processes	加壳进程
+Low process image coherency	进程映像一致性低
+Relocated DLLs	重定位 DLL
+Protected handles	受保护的句柄
+Inheritable handles	可继承的句柄
+Untrusted DLLs and Services	不受信任的 DLL 与服务
+Disabled Services	已禁用的服务
+Logging	日志记录
+Log all events to this file (leave blank to disable this feature):	将所有事件记录到此文件（留空则禁用此功能）：
+Changes will require a restart of System Informer.	更改需要重启 System Informer 才能生效。
+Network Tools	网络工具
+Enable extended TCP statistics	启用扩展 TCP 统计
+Ping packet length:	Ping 数据包长度：
+Max Tracert Hops:	最大 Tracert 跳数：
+MaxMind GeoLite Account ID:	MaxMind GeoLite 账户 ID：
+MaxMind GeoLite License Key:	MaxMind GeoLite 许可证密钥：
+Open GeoIP.conf	打开 GeoIP.conf
+Download update	下载更新
+GeoLite Update	GeoLite 更新
+GeoLite Country (Small)	GeoLite 国家（小型）
+Note: You can also download GeoLite updates from the Main menu > Tools > Network Tools > Update GeoLite...	注意：你也可以从“主菜单 > 工具 > 网络工具 > 更新 GeoLite...”下载 GeoLite 更新。
+Update MaxMind License Key	更新 MaxMind 许可证密钥
+Paste the license key below:	在下方粘贴许可证密钥：
+Triggers	触发器
+Recovery	恢复
+First failure:	第一次失败：
+Second failure:	第二次失败：
+Third failure:	第三次失败：
+Reset fail count after:	重置失败计数：
+Restart service after:	重启服务：
+Enable actions for stops with errors	为因错误而停止的服务启用操作
+Restart computer options...	重启计算机选项...
+Run program	运行程序
+Append /fail=%1% to pass the fail count to the program.	追加 /fail=%1% 以将失败计数传递给该程序。
+Subsequent failures:	后续失败：
+Restart the computer after:	重启计算机：
+Before restarting, send this message to computers on the network:	重启前向网络中的计算机发送以下消息：
+Use default message	使用默认消息
+Preshutdown timeout:	预关机超时：
+milliseconds	毫秒
+days	天
+minutes	分钟
+Service SID:	服务 SID：
+SID type:	SID 类型：
+Required privileges:	所需特权：
+Enable Services submenu for processes	为进程启用“服务”子菜单
+Subtype:	子类型：
+Action:	操作：
+Data items:	数据项：
+New...	新建...
+Edit...	编辑...
+Edit Data	编辑数据
+Values (one per line):	值（每行一个）：
+AppUserModelId:	AppUserModelId：
+Package name:	包名称：
+Internal state directory:	内部状态目录：
+Shared state directory:	共享状态目录：
+Internal state key:	内部状态键：
+Shared state key:	共享状态键：
+GPU Adapter Details	GPU 适配器详细信息
+Dedicated memory:	专用内存：
+Shared memory:	共享内存：
+Dedicated memory	专用内存
+Shared memory	共享内存
+Power usage:	功耗：
+Temperature:	温度：
+Fan RPM:	风扇转速：
+Dedicated	专用
+Shared	共享
+Back	返回
+Nodes	节点
+Auto	自动
+Demand start	按需启动
+Find handles	查找句柄
+Find modules	查找模块
+Find who is using a file	查找谁正在使用该文件
+Get ALPC port info	获取 ALPC 端口信息
+Get handle details	获取句柄详细信息
+Get object info	获取对象信息
+Get process details	获取进程详细信息
+Get process history	获取进程历史
+Get process mitigations	获取进程缓解措施
+Get process token	获取进程令牌
+List process handles	列出进程句柄
+List process memory regions	列出进程内存区域
+List process modules	列出进程模块
+List process threads	列出进程线程
+List process windows	列出进程窗口
+List processes	列出进程
+List recent events	列出近期事件
+List recent process exits	列出近期进程退出
+List the object namespace	列出对象命名空间
+Read process environment variables	读取进程环境变量
+Read process handle names	读取进程句柄名称
+Search tools	搜索工具
+Rank processes by recent activity	按最近活动排序进程
+Serve agent tools (MCP) for this session	为本会话提供代理工具（MCP）
+Allow sandboxed clients (AppContainer or low integrity)	允许沙盒客户端（AppContainer 或低完整性）
+Always ask	总是询问
+Not required	不要求
+Ask before allowing an agent to connect	允许代理连接前询问
+Delegate to client uses the client's prompt. Not required never asks.	委托给客户端时会使用客户端的提示。“不要求”表示从不询问。
+Disconnect	断开
+Server stopped.	服务器已停止。
+User Notes	用户备注
+Disk monitoring requires System Informer to be restarted with administrative privileges.	磁盘监控需要以管理员权限重启 System Informer。
+Firewall monitoring requires System Informer to be restarted with administrative privileges.	防火墙监控需要以管理员权限重启 System Informer。
+Signer:	签名者：
+1 day	1 天
+8 days	8 天
+Select graphics devices to show on the system information window:	选择要在系统信息窗口中显示的图形设备：
+Allowed	允许
+The image file backing the process has low coherency when compared to the mapped image.	支撑该进程的映像文件与已映射映像相比一致性偏低。
+Threads that have made at least one GUI-related system call.	已发出至少一次图形界面相关系统调用的线程。
+Highlight suspended threads in the Threads list.	在“线程”列表中高亮已挂起的线程。
+Highlight delay-execution waits in the Threads list.	在“线程”列表中高亮“延迟执行”等待。
+Highlight user-request waits in the Threads list.	在“线程”列表中高亮“用户请求”等待。
+Highlight alert-by-thread-ID waits in the Threads list.	在“线程”列表中高亮“按线程 ID 唤醒”等待。
+Highlight queue waits in the Threads list.	在“线程”列表中高亮“队列”等待。
+Highlight GUI threads in the Threads list.	在“线程”列表中高亮图形界面线程。
+Highlight network items whose owning process is unknown.	高亮所属进程未知的网络条目。
+Highlight network items owned by subsystem processes.	高亮由子系统进程所属的网络条目。
+Highlight process environment variables in the Environment page.	在“环境”页面高亮进程环境变量。
+Highlight user environment variables in the Environment page.	在“环境”页面高亮用户环境变量。
+Highlight CMD-style environment variables in the Environment page.	在“环境”页面高亮 CMD 风格的环境变量。
+Highlight providers in the default WMI namespace.	高亮默认 WMI 命名空间中的提供程序。
+Token groups or privileges that are enabled by default.	默认即启用的令牌组或特权。
+Token groups or privileges that are disabled but enabled by default.	当前禁用但默认启用的令牌组或特权。
+Token groups or privileges that are disabled.	已禁用的令牌组或特权。
+Token privileges that have been removed.	已被移除的令牌特权。
+Token groups or privileges that cause the token to report as elevated.	使令牌报告为已提升的令牌组或特权。
+Token dangerous flags that are enabled.	已启用的令牌危险标志。
+Token dangerous flags that are disabled.	已禁用的令牌危险标志。
+Highlight private pages in the Memory list.	在“内存”列表中高亮私有页面。
+Highlight system image pages in the Memory list.	在“内存”列表中高亮系统映像页面。
+Highlight CFG bitmap pages in the Memory list.	在“内存”列表中高亮 CFG 位图页面。
+Highlight executable pages in the Memory list.	在“内存”列表中高亮可执行页面。
+Modules that are not digitally signed or otherwise untrusted.	未做数字签名或其他方面不受信任的模块。
+Modules whose backing image file has low coherency.	支撑映像文件一致性偏低的模块。
+Modules that contain managed .NET code.	含托管 .NET 代码的模块。
+Modules associated with app-container or immersive applications.	与应用容器或沉浸式应用相关的模块。
+Modules that were not loaded at their preferred image base.	未加载到首选映像基址的模块。
+Modules loaded from the KnownDLLs image set.	从 KnownDLLs 映像集加载的模块。
+Standard loaded native modules, including trusted Microsoft modules.	常规加载的本机模块，包括受信任的 Microsoft 模块。
+Mapped files, mapped images, and enclave modules.	映射文件、映射映像与 enclave 模块。
+DLLs that were not loaded at their preferred image bases.	未加载到首选映像基址的 DLL。
+Handles that are protected from being closed.	受保护、无法被关闭的句柄。
+Processes with built-in protection levels.	带内置保护级别的进程。
+Handles that can be inherited by child processes.	可被子进程继承的句柄。
+Processes that are protected by handle object callbacks.	受句柄对象回调保护的进程。
+Services and DLLs which are not digitally signed.	未做数字签名的服务和 DLL。
+Services which have been disabled.	已被禁用的服务。
+Services that are not running.	未在运行的服务。
+Processes and threads with power efficiency.	处于能效模式的进程和线程。
+Reset to defaults	恢复默认设置
+Reset all to defaults	全部恢复默认设置
+Denied	拒绝
+Delegate to client	委托给客户端
+Analyze thread wait	分析线程等待
+Ask a window to close	请求窗口关闭
+Ask Hybrid Analysis about a hash	向 Hybrid Analysis 查询哈希
+Ask VirusTotal about a hash	向 VirusTotal 查询哈希
+Cancel a thread's synchronous I/O	取消线程的同步 I/O
+Change service start type	更改服务启动类型
+Close handle in process	关闭进程中的句柄
+Close TCP connection	关闭 TCP 连接
+Continue service	继续运行服务
+Empty a process working set	清空进程工作集
+Enable or disable a device	启用或禁用设备
+Find handles to an object	查找指向对象的句柄
+Freeze a process	冻结进程
+Get .NET assemblies	获取 .NET 程序集
+Get a driver or device object	获取驱动程序或设备对象
+Get cached scan verdict	获取缓存的扫描结论
+Get device resources	获取设备资源
+Get disk health	获取磁盘健康状态
+Get disk identity	获取磁盘标识
+Get disk performance	获取磁盘性能
+Get file info	获取文件信息
+Get GPU usage	获取 GPU 占用
+Get image coherency	获取映像一致性
+Get kernel driver status	获取内核驱动状态
+Get memory details	获取内存详情
+Get modified image pages	获取已修改的映像页面
+Get object security	获取对象安全信息
+Get pagefile information	获取页面文件信息
+Get process environment variables	获取进程环境变量
+Get process GPU usage	获取进程 GPU 占用
+Get process I/O rates	获取进程 I/O 速率
+Get process job	获取进程作业
+Get process thread stacks	获取进程线程调用栈
+Get processor information	获取处理器信息
+Get saved process notes	获取已保存的进程备注
+Get section mappings	获取节区映射
+Get security posture	获取安全状态
+Get service details	获取服务详情
+Get SMBIOS information	获取 SMBIOS 信息
+Get system environment variables	获取系统环境变量
+Get system history	获取系统历史
+Get system information	获取系统信息
+Get the driver's view of a process	获取驱动程序视角下的进程
+Get thread stack	获取线程调用栈
+Get thread wait chain	获取线程等待链
+Get TPM information	获取 TPM 信息
+Get UEFI firmware variables	获取 UEFI 固件变量
+Get unloaded modules	获取已卸载模块
+Get window information	获取窗口信息
+Hash a file	计算文件哈希
+Inspect a PE image	检查 PE 映像
+List a directory	列出目录
+List autostart entries	列出自启动项
+List devices	列出设备
+List firewall events	列出防火墙事件
+List graphics adapters	列出图形适配器
+List kernel pool usage by tag	按标签列出内核池使用情况
+List loaded kernel modules	列出已加载的内核模块
+List logon sessions	列出登录会话
+List named pipes	列出命名管道
+List network adapters	列出网络适配器
+List network connections	列出网络连接
+List process handles with object names	列出带对象名的进程句柄
+List scheduled tasks	列出计划任务
+List services	列出服务
+List terminal sessions	列出终端会话
+List windows	列出窗口
+List WMI event subscriptions	列出 WMI 事件订阅
+Look up an account	查询账户
+Look up an address country	查询地址所在国家
+Look up an address registration	查询地址注册信息
+Pause service	暂停服务
+Ping a host	对主机执行 Ping
+Read a registry key	读取注册表项
+Read process memory	读取进程内存
+Read strings from a file	从文件读取字符串
+Resolve symbol	解析符号
+Restart service	重启服务
+Resume process	恢复进程
+Resume thread	恢复线程
+Save a process comment	保存进程注释
+Scan for hidden processes	扫描隐藏进程
+Search process memory	搜索进程内存
+Search process strings	搜索进程字符串
+Set process I/O priority	设置进程 I/O 优先级
+Set process page priority	设置进程页面优先级
+Set process priority class	设置进程优先级类别
+Set which processors a process may run on	设置进程可在哪些处理器上运行
+Show, hide or resize a window	显示、隐藏或调整窗口大小
+Start service	启动服务
+Stop service	停止服务
+Suspend process	挂起进程
+Suspend thread	挂起线程
+Terminate process	终止进程
+Terminate thread	终止线程
+Thaw a process	解冻进程
+Verify a file's Authenticode signature	验证文件的 Authenticode 签名
+Write process memory dump	写入进程内存转储
+Cancel thread I/O	取消线程 I/O
+Change service configuration	更改服务配置
+Close a window	关闭窗口
+Close handle	关闭句柄
+Close network connection	关闭网络连接
+Get UEFI variables	获取 UEFI 变量
+Inspect executable image	检查可执行映像
+List kernel drivers	列出内核驱动
+Read process thread stacks	读取进程线程调用栈
+Read thread stack	读取线程调用栈
+Read thread wait chains	读取线程等待链
+Set process affinity	设置进程亲和性
+Set process priority	设置进程优先级
+Set window state	设置窗口状态
+System Informer status	System Informer 状态
+Verify file signature	验证文件签名
+A complete dump of the process, rarely needed most of the time.	进程的完整转储，多数情况下很少用到。
+A hang is a wait, so name the wait before naming a cause:	挂起本质上是等待，先确定在等什么，再谈原因：
+A license key and account number are required to download GeoLite database updates and either the key or number are not configured.	下载 GeoLite 数据库更新需要许可证密钥和账户号，而当前密钥或账户号未配置。
+A newer build of System Informer is available.	有更新版本的 System Informer 可用。
+A service SID could not be derived from that name.	无法从该名称推导出服务 SID。
+A very limited dump with limited data.	数据非常有限的最小转储。
+ALPC port information comes from the System Informer driver, which is not available to this instance (access level: %s).	ALPC 端口信息来自 System Informer 驱动程序，本实例无法使用（访问级别：%s）。
+Access to the kernel driver is restricted.	对内核驱动程序的访问受限。
+Allows a broker to downgrade the dynamic code policy for a process.	允许代理降级进程的动态代码策略。
+Altering the integrity label for a process may produce undesirable results, instability or data corruption.	修改进程的完整性标签可能导致不良后果、不稳定或数据损坏。
+An agent asked System Informer to perform an action and nobody confirmed it in time. The request was denied.	有代理请求 System Informer 执行操作，但未及时获得确认，请求已被拒绝。
+An agent connected to System Informer and nobody allowed it in time. It was disconnected.	有代理连接到 System Informer，但未及时获得允许，连接已断开。
+Assertion failed!	断言失败！
+Assertion failed:	断言失败：
+At least one of start_type, delayed_auto_start and description is required.	start_type、delayed_auto_start 和 description 至少需要提供一个。
+Attempting to start %s...	正在尝试启动 %s...
+Attempting to stop %s...	正在尝试停止 %s...
+Authorization this session:	本会话授权：
+Automatically denied in %u seconds.	将在 %u 秒后自动拒绝。
+BITS download retry pending...	BITS 下载等待重试...
+Check for an updated System Informer release?	是否检查 System Informer 的新版本？
+Checking for an updated release...	正在检查新版本...
+Checking the canary channel...	正在检查 Canary 通道...
+Checking the channel...	正在检查通道...
+Checking the release channel...	正在检查正式发布通道...
+Click Check for updates to try again.	点击“检查更新”重试。
+Click Check to continue.	点击“检查”继续。
+Click Install to continue.	点击“安装”继续。
+Click Retry to download the channel again.	点击“重试”重新下载通道。
+Click Retry to download the update again.	点击“重试”重新下载更新。
+Combining memory pages...	正在合并内存页面...
+Compressed memory:	已压缩内存：
+Compression stores emptied.	压缩存储已清空。
+Confirm only if you intended it.	只有在你确实想这么做时才确认。
+Connected agents will be able to use it without anyone being asked.	已连接的代理将无需询问即可使用它。
+Connecting to %s...	正在连接 %s...
+Connecting to the task scheduler service failed (0x%08x).	连接任务计划程序服务失败（0x%08x）。
+Connecting to whois.iana.org...	正在连接 whois.iana.org...
+Connecting with BITS...	正在通过 BITS 连接...
+Connection to %s failed.	连接到 %s 失败。
+Connection to whois.iana.org failed.	连接 whois.iana.org 失败。
+Convert it to a regular expression? Backslashes will be escaped and wildcards expanded.	是否转换为正则表达式？反斜杠将被转义，通配符将被展开。
+Creating the minidump file...	正在创建转储文件...
+Custom system state change:	自定义系统状态更改：
+Data Execution Prevention (DEP) is%s enabled for this process.	此进程的数据执行保护（DEP）已%s启用。
+Decommitting memory regions may cause the process to crash.	取消提交内存区域可能导致进程崩溃。
+Deleting a service can prevent the system from starting or functioning properly.	删除服务可能导致系统无法启动或无法正常运行。
+Detected memory leaks!	检测到内存泄漏！
+Device interface arrival:	设备接口到达：
+Disables spectre mitigations for the process.	禁用该进程的 Spectre 缓解措施。
+Display windows for the following desktop:	显示以下桌面上的窗口：
+Do you want to continue?	是否继续？
+Do you want to make System Informer the default Windows Task Manager?	是否将 System Informer 设为默认的 Windows 任务管理器？
+Do you want to make the parent window(s) visible along with this window?	是否让父窗口随此窗口一起显示？
+Do you want to restore the default Windows Task Manager?	是否恢复默认的 Windows 任务管理器？
+Donors - thank you for your support!	捐赠者——感谢你们的支持！
+Download the latest GeoLite database?	是否下载最新的 GeoLite 数据库？
+Downloading GeoLite2-%s...	正在下载 GeoLite2-%s...
+Downloading release %s...	正在下载版本 %s...
+Downloading update %s...	正在下载更新 %s...
+Downloading with BITS...	正在通过 BITS 下载...
+Downloading%s channel %s...	正在下载%s通道 %s...
+Driver and device objects are read through the System Informer driver at maximum access, which is not available to this instance (access level: %s).	驱动程序和设备对象需通过 System Informer 驱动以最高访问级别读取，本实例无法使用（访问级别：%s）。
+Edit the value:	编辑该值：
+Either pid or path is required.	pid 或路径必须提供一个。
+Emptying compression store...	正在清空压缩存储...
+Emptying modified file cache...	正在清空已修改文件缓存...
+Emptying modified page list...	正在清空已修改页面列表...
+Emptying priority 0 standby list...	正在清空优先级 0 备用列表...
+Emptying registry cache...	正在清空注册表缓存...
+Emptying standby list...	正在清空备用列表...
+Emptying system file cache ...	正在清空系统文件缓存...
+Emptying the compression store requires a connection to the kernel driver.	清空压缩存储需要连接内核驱动程序。
+Emptying working sets...	正在清空工作集...
+Enabling or disabling virtualization for a process may alter its functionality and produce undesirable effects.	为进程启用或禁用虚拟化可能改变其功能并产生不良影响。
+Enter a custom integrity level:	输入自定义完整性级别：
+Enter a name for this column set:	为此列集输入名称：
+Enter an address:	输入地址：
+Enter an offset:	输入偏移：
+Enter new Window DPI:	输入新的窗口 DPI：
+Enter the filter pattern:	输入筛选模式：
+Enter the new value:	输入新值：
+Enumerating processes...	正在枚举进程...
+Enumerating the network connections failed.	枚举网络连接失败。
+Error downloading GeoLite database.	下载 GeoLite 数据库出错。
+Error downloading the channel.	下载通道出错。
+Error downloading the update.	下载更新出错。
+Error parsing whois.iana.org response:	解析 whois.iana.org 响应出错：
+Error reading address near %Ix.	读取 %Ix 附近的地址时出错。
+Error uploading %s...	上传 %s 出错...
+Exactly one of address, rva or name is required.	address、rva、name 中必须且只能提供一个。
+Exactly one of pattern_hex, ascii and utf16 is required.	pattern_hex、ascii、utf16 中必须且只能提供一个。
+Exactly one of sid, name or service_name is required.	sid、name、service_name 中必须且只能提供一个。
+Executables are sometimes "packed" to reduce their size.	可执行文件有时会被“加壳”以减小体积。
+Executing memory command...	正在执行内存命令...
+Executing memory commands...	正在执行内存命令...
+ExtendedTools has no I/O counters for this process.	ExtendedTools 没有此进程的 I/O 计数器。
+Failed to change the device state.	更改设备状态失败。
+Failed to restart the device.	重启设备失败。
+Failed to uninstall the device.	卸载设备失败。
+File architecture not supported.	不支持该文件架构。
+Finalizing BITS download...	正在完成 BITS 下载...
+Finalizing Delivery Optimization download...	正在完成传递优化下载...
+First analyzed:	首次分析：
+For most purposes, this dump file is the most useful.	就多数用途而言，这种转储文件最有用。
+Freeing memory regions may cause the process to crash.	释放内存区域可能导致进程崩溃。
+GPU memory usage:	GPU 内存占用：
+GPU monitoring is not running in this System Informer instance.	本 System Informer 实例未在监控 GPU。
+GPU temperature:	GPU 温度：
+Geoip database not found.	未找到 GeoIP 数据库。
+Hash check failed.	哈希校验失败。
+Hash check failed. Click Retry to download the channel again.	哈希校验失败。点击“重试”重新下载通道。
+Hash check failed. Click Retry to download the update again.	哈希校验失败。点击“重试”重新下载更新。
+Hybrid Analysis API error.	Hybrid Analysis API 出错。
+If this service fails, the computer will restart.	若此服务失败，计算机将重新启动。
+If you continue, they will be removed.	若继续，它们将被移除。
+Image coherency support is disabled.	映像一致性支持已禁用。
+Initializing BITS download...	正在初始化 BITS 下载...
+Initializing Delivery Optimization...	正在初始化传递优化...
+Initializing download request...	正在初始化下载请求...
+Initializing kernelbase symbols...	正在初始化 kernelbase 符号...
+Initializing...	正在初始化...
+Inspecting kernel stacks requires a connection to the kernel driver.	检查内核栈需要连接内核驱动程序。
+Invalid object address.	对象地址无效。
+Kernel minidump of processes require administrative privileges. Make sure System Informer is running with administrative privileges.	进程的内核转储需要管理员权限，请确保 System Informer 以管理员权限运行。
+Last analyzed:	上次分析：
+Later requests to %s are confirmed by the connected client instead of by System Informer, which cannot check how the client presents them.	此后对 %s 的请求将由已连接的客户端确认，而不是由 System Informer 确认，后者无法核实客户端的呈现方式。
+Let the client confirm this from now on?	此后是否由客户端确认？
+Listing truncated to %lu entries.	列表已截断为 %lu 项。
+Loading .NET assemblies...	正在加载 .NET 程序集...
+Loading package information...	正在加载包信息...
+Loading strings...	正在加载字符串...
+Loading symbols...	正在加载符号...
+Locating analysis for %s...	正在查找 %s 的分析结果...
+Mark of the Web.	Web 标记。
+Memory pages combined:	已合并内存页面：
+Merge into %USERPROFILE%\.codeium\windsurf\mcp_config.json.	合并到 %USERPROFILE%\.codeium\windsurf\mcp_config.json。
+Merge into %USERPROFILE%\.config\opencode\opencode.json.	合并到 %USERPROFILE%\.config\opencode\opencode.json。
+Merge into %USERPROFILE%\.omp\agent\mcp.json. omp also reads Claude Code and Codex configs.	合并到 %USERPROFILE%\.omp\agent\mcp.json。omp 也会读取 Claude Code 和 Codex 的配置。
+Merge into claude_desktop_config.json (Settings > Developer > Edit Config), then restart.	合并到 claude_desktop_config.json（设置 > 开发者 > 编辑配置），然后重启。
+Modified page lists emptied.	已修改页面列表已清空。
+No CFG bitmap is present for this process.	此进程没有 CFG 位图。
+No account named %s could be found.	未找到名为 %s 的账户。
+No answer in %u seconds keeps asking each time.	%u 秒内无回应则每次都继续询问。
+No device has that instance id.	没有该实例 ID 对应的设备。
+No forecast data available.	没有可用的预测数据。
+No module of that process is loaded at that address.	该进程没有任何模块加载在该地址。
+No process with pid %llu is in the provider cache.	提供程序缓存中没有 PID 为 %llu 的进程。
+No process with this pid is in the provider cache.	提供程序缓存中没有该 PID 的进程。
+No service named %s is in the provider cache.	提供程序缓存中没有名为 %s 的服务。
+No service named %s is in the provider cache. Use list_services to find the service name.	提供程序缓存中没有名为 %s 的服务，请用 list_services 查找服务名。
+No symbol named %s was found. A name resolves only from a symbol file or an export table.	未找到名为 %s 的符号。名称只能从符号文件或导出表解析。
+No task folder named %s could be opened (0x%08x).	无法打开名为 %s 的任务文件夹（0x%08x）。
+No whois server answered.	没有 whois 服务器应答。
+Not started: the pipe already exists (another instance in this session).	未启动：管道已存在（本会话中已有另一个实例）。
+Note: Realtime priority requires the User has the SeIncreaseBasePriorityPrivilege or the process running as Administrator.	注意：实时优先级要求用户具有 SeIncreaseBasePriorityPrivilege 特权，或以管理员身份运行进程。
+Number of bytes must be 256 or smaller.	字节数必须为 256 或更小。
+Number of users:	用户数：
+Object creation hooking not active.	对象创建挂钩未启用。
+Object dump complete.	对象转储完成。
+Once lowered, the integrity level of the token cannot be raised again.	令牌的完整性级别一旦降低便无法再提高。
+One of path, service_name, pid, tid or sddl is required.	path、service_name、pid、tid、sddl 中需要提供一个。
+Only an established TCP connection can be closed.	只能关闭已建立的 TCP 连接。
+Opening an ICMP handle failed.	打开 ICMP 句柄失败。
+Original request to %s:	对 %s 的原始请求：
+Paste the key below:	在下方粘贴密钥：
+Pinging %s with %lu bytes of data...	正在以 %lu 字节数据 Ping %s...
+Pinging X with X bytes of data:	正在以 X 字节数据 Ping X：
+Please check the Options > Network Tools > GeoLite ID or Key are configured before downloading geoLite updates.	下载 GeoLite 更新前，请确认已在“选项 > 网络工具”中配置 GeoLite ID 或密钥。
+Please restart System Informer for the changes to take effect...	请重启 System Informer 以使更改生效...
+Possible values:	可能的值：
+Press Ctrl+C or type "exit" to close the debug console. Type "help" for a list of commands.	按 Ctrl+C 或输入 "exit" 关闭调试控制台，输入 "help" 查看命令列表。
+Priority 0 standby list emptied.	优先级 0 备用列表已清空。
+Process is UIAccess.	进程为 UIAccess。
+Processes and DLLs that belong to a Modern UI app.	属于现代 UI 应用的进程和 DLL。
+Processes and threads that are partially suspended from execution.	被部分挂起执行的进程和线程。
+Processes and threads that are suspended from execution.	被挂起执行的进程和线程。
+Processes associated with a job.	与作业关联的进程。
+Processes running under WOW64, i.e. 32-bit.	在 WOW64 下运行（即 32 位）的进程。
+Processes running under the NT AUTHORITY\SYSTEM user account.	在 NT AUTHORITY\SYSTEM 用户账户下运行的进程。
+Processes running under the same user account as System Informer.	与 System Informer 使用同一用户账户运行的进程。
+Processes that are currently being debugged.	当前正在被调试的进程。
+Processes that belong to the Windows subsystem for Linux.	属于适用于 Linux 的 Windows 子系统的进程。
+Processes which host one or more services.	承载一个或多个服务的进程。
+Processes with UIAccess privileges.	具有 UIAccess 特权的进程。
+Processes with a background scheduling priority.	具有后台调度优先级的进程。
+Processes with full privileges on a system with UAC enabled.	在启用 UAC 的系统上拥有完整特权的进程。
+Processor APIC (Node:	处理器 APIC（节点：
+Querying changelog...	正在查询更新日志...
+Querying objects...	正在查询对象...
+Querying thread wait chain sessions...	正在查询线程等待链会话...
+Queued BITS download...	BITS 下载已排队...
+Rate limited...	已被限流...
+Raw event data:	原始事件数据：
+Reading a 32-bit process's runtime needs a helper that prompts for elevation, so it is not done here.	读取 32 位进程的运行时需要会请求提升权限的辅助程序，因此此处不执行。
+Ready to install update?	是否准备安装更新？
+Ready to switch the channel?	是否准备切换通道？
+Ready to switch to the canary channel?	是否准备切换到 Canary 通道？
+Ready to switch to the release channel?	是否准备切换到正式发布通道？
+Receive bytes:	接收字节：
+Records for %s %s:	%s %s 的记录：
+Recovery actions are not supported for this service.	此服务不支持恢复操作。
+ReferralServer:	ReferralServer：
+Registry cache emptied.	注册表缓存已清空。
+Removing privileges may reduce the functionality of the process, and is permanent for the lifetime of the process.	移除特权可能降低进程功能，且在进程生命周期内不可恢复。
+Removing this flag may reduce the functionality of the process provided it is an accessibility application.	若该进程是辅助功能应用，移除此标志可能降低其功能。
+Rescanning %s...	正在重新扫描 %s...
+Resolving symbols...	正在解析符号...
+Restart the application.	请重启应用程序。
+Results appear in the Hybrid-Analysis column. To show it, right-click any column header and select "Choose columns...".	结果显示在 Hybrid-Analysis 列。要显示该列，请右键任意列标题并选择“选择列...”。
+Revoke grants on the Agents options page, or disconnecting the agent, undoes it.	在“代理”选项页撤销授权，或断开代理连接，即可撤销此操作。
+Run in a terminal, then confirm the install in Cursor.	在终端中运行，然后在 Cursor 中确认安装。
+Run in a terminal, then confirm the install in VS Code.	在终端中运行，然后在 VS Code 中确认安装。
+Run in a terminal. Under WSL, use the /mnt/c/... form of the path.	在终端中运行。在 WSL 下请使用 /mnt/c/... 形式的路径。
+Runtime Check Error.	运行时检查错误。
+Runtime Error!	运行时错误！
+Search settings...	搜索设置...
+Searching memory strings...	正在搜索内存字符串...
+Section mappings come from the System Informer driver, which is not available to this instance (access level: %s).	节区映射来自 System Informer 驱动程序，本实例无法使用（访问级别：%s）。
+Select a privilege to add:	选择要添加的特权：
+Select download to continue.	选择“下载”继续。
+Select the default process IO priority.	选择默认的进程 I/O 优先级。
+Select the default process page priority.	选择默认的进程页面优先级。
+Select the default process priority.	选择默认的进程优先级。
+Select the graphics scheduling priority.	选择图形调度优先级。
+Selected private bytes:	已选私有字节：
+Sending download request...	正在发送下载请求...
+Service digital signature support disabled.	服务数字签名支持已禁用。
+Services referencing %s in %s (%lu):	在 %s 中引用 %s 的服务（%lu）：
+Services referencing %s:	引用 %s 的服务：
+Set to true to allow the action described in the message.	设为 true 以允许消息中所述的操作。
+Setting service protection will prevent the service from being controlled, modified, or deleted.	设置服务保护后，该服务将无法被控制、修改或删除。
+Signature check failed.	签名校验失败。
+Signature check failed. Click Retry to download the channel again.	签名校验失败。点击“重试”重新下载通道。
+Signature check failed. Click Retry to download the update again.	签名校验失败。点击“重试”重新下载更新。
+Some programs may also restrict access or ban your account when decommitting the memory of the process.	取消提交该进程内存时，某些程序还可能限制访问或封禁你的账户。
+Some programs may also restrict access or ban your account when freeing the memory of the process.	释放该进程内存时，某些程序还可能限制访问或封禁你的账户。
+Some programs may also restrict access or ban your account when unmapping the memory of the process.	取消映射该进程内存时，某些程序还可能限制访问或封禁你的账户。
+Some programs may restrict access or ban your account when editing the environment variable(s) of the process.	编辑该进程的环境变量时，某些程序可能限制访问或封禁你的账户。
+Some programs may restrict access or ban your account when editing the memory of the process.	编辑该进程内存时，某些程序可能限制访问或封禁你的账户。
+Some programs may restrict access or ban your account when loading modules into the process.	向该进程加载模块时，某些程序可能限制访问或封禁你的账户。
+Standby lists emptied.	备用列表已清空。
+Starting Delivery Optimization download...	正在启动传递优化下载...
+Starting download...	正在开始下载...
+Statistics for %s:	%s 的统计信息：
+Stop asking about this for this connection?	是否对此连接不再询问？
+Stop the OpenClaw gateway, then run in a terminal.	停止 OpenClaw 网关，然后在终端中运行。
+Successfully deleted the IFEO key.	已成功删除 IFEO 键。
+System Informer has partnered with Hybrid-Analysis to provide automatic reputation analysis for processes, loaded modules, and services.	System Informer 已与 Hybrid-Analysis 合作，为进程、已加载模块和服务提供自动信誉分析。
+System Informer is running.	System Informer 正在运行。
+System Informer uses the following components:	System Informer 使用以下组件：
+System Informer: allow the connected agent to %s for the rest of this session?	System Informer：是否允许已连接的代理在本会话内%s？
+System Informer: allow the connected agent to %s%s%s?	System Informer：是否允许已连接的代理%s%s%s？
+System file cache emptied:	系统文件缓存已清空：
+Terminating a Zombie process may cause the system to become unstable or crash.	终止僵尸进程可能导致系统不稳定或崩溃。
+That is not an IPv4 or IPv6 address.	这不是 IPv4 或 IPv6 地址。
+That is not an IPv4 or IPv6 address. This tool does not resolve host names.	这不是 IPv4 或 IPv6 地址。此工具不解析主机名。
+That is not an IPv4 or IPv6 address. This tool looks up address registrations, not domain names.	这不是 IPv4 或 IPv6 地址。此工具查询地址注册信息，不查询域名。
+That process has no module named %s.	该进程没有名为 %s 的模块。
+That process has too many threads to walk.	该进程线程过多，无法遍历。
+That window belongs to pid %lu, not to pid %lu; window handles are reused. Re-list and try again.	该窗口属于进程 %lu，而不属于 %lu；窗口句柄会被复用，请重新列出后重试。
+That window handle does not name a window.	该窗口句柄不指向任何窗口。
+The DotNetTools plugin is not loaded, so the managed runtime cannot be read.	未加载 DotNetTools 插件，因此无法读取托管运行时。
+The ExtendedTools plugin is not loaded, so nothing is accumulating per-process I/O.	未加载 ExtendedTools 插件，因此没有在累计每进程 I/O 数据。
+The ExtendedTools plugin is not loaded, so nothing is collecting GPU utilization.	未加载 ExtendedTools 插件，因此没有收集 GPU 利用率。
+The ExtendedTools plugin is not loaded, so nothing is collecting per-process GPU usage.	未加载 ExtendedTools 插件，因此没有收集每进程 GPU 占用。
+The GeoLite database has been updated.	GeoLite 数据库已更新。
+The GeoLite updater doesn't support legacy versions of Windows.	GeoLite 更新程序不支持旧版 Windows。
+The ICMP helper is not available.	ICMP 辅助组件不可用。
+The ICMPv6 helper is not available.	ICMPv6 辅助组件不可用。
+The IP helper library is not available.	IP 辅助库不可用。
+The NetworkTools plugin is not loaded, so there is no geolocation database to read.	未加载 NetworkTools 插件，因此没有可读取的地理位置数据库。
+The NetworkTools plugin is not loaded, so there is nothing to run the query.	未加载 NetworkTools 插件，因此没有可执行该查询的组件。
+The OnlineChecks plugin is not loaded, so there is no scan database to read.	未加载 OnlineChecks 插件，因此没有可读取的扫描数据库。
+The OnlineChecks plugin is not loaded, so there is nothing to ask Hybrid Analysis with.	未加载 OnlineChecks 插件，因此无法向 Hybrid Analysis 发起查询。
+The OnlineChecks plugin is not loaded, so there is nothing to ask VirusTotal with.	未加载 OnlineChecks 插件，因此无法向 VirusTotal 发起查询。
+The UserNotes plugin is not loaded, so there are no saved notes.	未加载 UserNotes 插件，因此没有已保存的备注。
+The channel has been successfully downloaded and verified.	通道已成功下载并通过校验。
+The confirmation could not be completed.	无法完成确认。
+The confirmation was declined or cancelled.	确认被拒绝或已取消。
+The creation time of thread %llu could not be read, so its identity could not be checked.	无法读取线程 %llu 的创建时间，因此无法核验其身份。
+The custom subtype is invalid.	自定义子类型无效。
+The destination address route is unreachable.	目标地址的路由不可达。
+The device reports that it cannot be disabled at all, so trying again will not help - a device the system is running on says this.	设备报告其完全无法禁用，因此重试也无济于事——这是系统当前正依赖的设备。
+The device tree is not available.	设备树不可用。
+The device was there when the target was resolved, so this is a refusal rather than an absence.	解析目标时该设备确实存在，因此这属于拒绝，而非设备不存在。
+The file could not be loaded for symbols.	无法加载该文件以获取符号。
+The file could not be mapped as a PE image; get_image_strings reads executables.	无法将该文件映射为 PE 映像；get_image_strings 只读取可执行文件。
+The file could not be read to hash it.	无法读取该文件以计算哈希。
+The file is %llu bytes; hashing is limited to %llu.	文件大小为 %llu 字节，哈希计算上限为 %llu。
+The file is not a PE image.	该文件不是 PE 映像。
+The filtering platform library is not available.	筛选平台库不可用。
+The kernel driver is not supported on this Windows version, the minimum supported version is Windows 10.	此 Windows 版本不支持该内核驱动，最低支持版本为 Windows 10。
+The kernel driver is not supported under Wow64, use the native binary instead.	Wow64 下不支持该内核驱动，请改用本机版本。
+The kernel driver is not yet supported on this kernel version. Request support by submitting a GitHub issue with the Windows Kernel version.	当前内核版本尚不支持该内核驱动。请提交包含 Windows 内核版本的 GitHub issue 以请求支持。
+The modules of this process could not be enumerated.	无法枚举此进程的模块。
+The object identifier will be permanently deleted.	对象标识符将被永久删除。
+The page priority will be applied by Windows even when System Informer isn't currently running.	即使 System Informer 未运行，Windows 也会应用该页面优先级。
+The parent window(s) of this window are currently invisible.	此窗口的父窗口当前不可见。
+The path could not be resolved.	无法解析该路径。
+The path is too long.	路径过长。
+The pool tag table is too large to read.	池标签表过大，无法读取。
+The process (PID %lu) does not exist.	进程（PID %lu）不存在。
+The process has no image file to compare against.	该进程没有可供比较的映像文件。
+The process is no longer running.	该进程已不再运行。
+The process memory could not be enumerated.	无法枚举该进程内存。
+The process will be restarted with the same command line, working directory and privileges.	该进程将以相同的命令行、工作目录和权限重新启动。
+The process's own image could not be found in its module list.	在该进程的模块列表中找不到它自身的映像。
+The property name is empty.	属性名为空。
+The regular expression could not be compiled.	无法编译该正则表达式。
+The repase point will be permanently deleted.	重解析点将被永久删除。
+The scan buffer could not be allocated.	无法分配扫描缓冲区。
+The search pattern is empty.	搜索模式为空。
+The security descriptor could not be read as SDDL.	无法以 SDDL 形式读取安全描述符。
+The selected privilege has already been added.	所选特权已添加。
+The service returned an untrusted upload location.	服务返回了不受信任的上传位置。
+The symbol provider could not be created.	无法创建符号提供程序。
+The system page size could not be read.	无法读取系统页面大小。
+The task scheduler could not be reached (0x%08x).	无法访问任务计划程序（0x%08x）。
+The tool returned neither a result nor an error.	该工具既未返回结果也未返回错误。
+The trigger type "%s" does not allow data items to be configured.	触发器类型“%s”不允许配置数据项。
+The update has been successfully downloaded and verified.	更新已成功下载并通过校验。
+The user denied this request.	用户拒绝了此请求。
+The user did not answer the confirmation in time; the request was denied.	用户未及时确认，请求已被拒绝。
+The value was applied anyway.	该值仍已应用。
+The window does not exist.	窗口不存在。
+The window property will be permanently deleted.	窗口属性将被永久删除。
+There are no assemblies to display.	没有可显示的程序集。
+There are no attributes to display.	没有可显示的属性。
+There are no capabilities to display.	没有可显示的能力。
+There are no claims to display.	没有可显示的声明。
+There are no environment variables to display.	没有可显示的环境变量。
+There are no graphics nodes to display.	没有可显示的图形节点。
+There are no handles to display.	没有可显示的句柄。
+There are no memory regions to display.	没有可显示的内存区域。
+There are no modules to display.	没有可显示的模块。
+There are no policies to display.	没有可显示的策略。
+There are no providers to display.	没有可显示的提供程序。
+There are no strings to display.	没有可显示的字符串。
+There are no threads to display.	没有可显示的线程。
+There are no windows to display.	没有可显示的窗口。
+There is no synchronous I/O to cancel.	没有可取消的同步 I/O。
+There was no saved entry to change.	没有可更改的已保存条目。
+This command is not available on non-debug builds.	此命令在非调试版本中不可用。
+This connection will be able to %s without being asked again.	此连接将无需再次询问即可%s。
+This connection will be able to %s, against any target, without being asked again.	此连接将无需再次询问即可针对任意目标%s。
+This filter cannot function because digital signature checking is not enabled.	由于未启用数字签名检查，此筛选器无法工作。
+This handle is marked protect-from-close and cannot be closed.	此句柄被标记为禁止关闭，无法关闭。
+This looks like a wildcard path, not a regular expression.	这看起来像通配符路径，而不是正则表达式。
+This machine did not boot in UEFI mode; firmware variables are not available.	此机器未以 UEFI 模式启动，固件变量不可用。
+This module was not referenced by a service.	此模块未被任何服务引用。
+This pid is not a real process.	此 PID 不是真实进程。
+This pid is not in the provider cache or has exited.	此 PID 不在提供程序缓存中或已退出。
+This process has no command line to file the comment under.	此进程没有命令行，无法在其下归档备注。
+This process is not running a .NET runtime.	此进程未运行 .NET 运行时。
+This request was made by an AI agent through System Informer. Confirm only if you intended it.	此请求由 AI 代理通过 System Informer 发起，只有在你确实想这么做时才确认。
+This sends the request off this machine to a service on the internet.	这会将请求从本机发送到互联网上的服务。
+This sends the request off this machine to a service on the internet. Confirm only if you intended it.	这会将请求从本机发送到互联网上的服务。只有在你确实想这么做时才确认。
+This tool is disabled in System Informer's AgentTools options.	此工具已在 System Informer 的 AgentTools 选项中被禁用。
+This tool is not implemented.	此工具尚未实现。
+Thread %llu belongs to pid %lu, not pid %lu. Re-list the threads and try again.	线程 %llu 属于进程 %lu，而不属于 %lu。请重新列出线程后重试。
+Thread %llu was created at %s, not %s; the tid has been reused. Re-list the threads and try again.	线程 %llu 创建于 %s，而非 %s；TID 已被复用。请重新列出线程后重试。
+Total compressed:	压缩总量：
+Total handles found:	找到的句柄总数：
+Total memory saved:	节省的内存总量：
+Tracing route to %s with %lu bytes of data...	正在以 %lu 字节数据跟踪到 %s 的路由...
+Tracing route to %s with %lu bytes of data... %s.	正在以 %lu 字节数据跟踪到 %s 的路由... %s。
+Tracing route to xyz...	正在跟踪到 xyz 的路由...
+Unable to add window property.	无法添加窗口属性。
+Unable to change service information.	无法更改服务信息。
+Unable to change service recovery information.	无法更改服务恢复信息。
+Unable to change service trigger information.	无法更改服务触发器信息。
+Unable to complete the request.	无法完成该请求。
+Unable to configure IFEO priority for this image.	无法为此映像配置 IFEO 优先级。
+Unable to connect to the service.	无法连接到该服务。
+Unable to create the request.	无法创建该请求。
+Unable to create the window context.	无法创建窗口上下文。
+Unable to create the window property.	无法创建窗口属性。
+Unable to delete firmware variable.	无法删除固件变量。
+Unable to destroy the window.	无法销毁窗口。
+Unable to display Find dialog.	无法显示“查找”对话框。
+Unable to display RTC Message.	无法显示 RTC 消息。
+Unable to display the whois window.	无法显示 whois 窗口。
+Unable to display window properties.	无法显示窗口属性。
+Unable to download GeoLite database updates.	无法下载 GeoLite 数据库更新。
+Unable to download GeoLite update.	无法下载 GeoLite 更新。
+Unable to download the response.	无法下载响应。
+Unable to enable WS watch.	无法启用 WS 监视。
+Unable to enable environment privilege.	无法启用环境特权。
+Unable to enumerate dependencies:	无法枚举依赖项：
+Unable to enumerate dependents:	无法枚举依赖方：
+Unable to enumerate the objects.	无法枚举对象。
+Unable to execute the setup.	无法执行安装程序。
+Unable to find the ETW publisher GUID.	无法找到 ETW 发布程序 GUID。
+Unable to initialize heap debugging. Make sure that you are using Windows 7 or above.	无法初始化堆调试，请确认你使用的是 Windows 7 或更高版本。
+Unable to load plugin.	无法加载插件。
+Unable to load the image.	无法加载映像。
+Unable to locate files with the SecurityId.	无法找到带有该 SecurityId 的文件。
+Unable to locate the target.	无法定位目标。
+Unable to parse the response.	无法解析响应。
+Unable to query IO priority.	无法查询 I/O 优先级。
+Unable to query directory object.	无法查询目录对象。
+Unable to query firmware table.	无法查询固件表。
+Unable to query handle information:	无法查询句柄信息：
+Unable to query memory information:	无法查询内存信息：
+Unable to query module information:	无法查询模块信息：
+Unable to query module references.	无法查询模块引用。
+Unable to query page priority.	无法查询页面优先级。
+Unable to query priority.	无法查询优先级。
+Unable to query process affinity.	无法查询进程亲和性。
+Unable to query process boost.	无法查询进程提升。
+Unable to query process efficiency mode.	无法查询进程能效模式。
+Unable to query service information.	无法查询服务信息。
+Unable to query service recovery information.	无法查询服务恢复信息。
+Unable to query service trigger information.	无法查询服务触发器信息。
+Unable to query the EFI variable.	无法查询 EFI 变量。
+Unable to query the service.	无法查询该服务。
+Unable to read the image.	无法读取映像。
+Unable to receive the request.	无法接收该请求。
+Unable to remove the object identifier.	无法移除对象标识符。
+Unable to remove the reparse point.	无法移除重解析点。
+Unable to remove the window property.	无法移除窗口属性。
+Unable to retrieve unload event trace information.	无法获取卸载事件跟踪信息。
+Unable to select the process.	无法选择进程。
+Unable to send the request.	无法发送该请求。
+Unable to start the event tracing session:	无法启动事件跟踪会话：
+Unable to start the firewall event tracing session:	无法启动防火墙事件跟踪会话：
+Unable to start the kernel event tracing session:	无法启动内核事件跟踪会话：
+Unable to update affinity for thread(s):	无法更新线程亲和性：
+Unable to update the EFI variable.	无法更新 EFI 变量。
+Unable to update the IFEO for IO priority.	无法更新 IO 优先级的 IFEO。
+Unable to update the IFEO for page priority.	无法更新页面优先级的 IFEO。
+Unable to update the IFEO for priority.	无法更新优先级的 IFEO。
+Unable to update the IFEO key for priority.	无法更新优先级的 IFEO 键。
+Unable to update the window property.	无法更新窗口属性。
+Unhandled tool.	未处理的工具。
+Unrecognized command.	无法识别的命令。
+Uploading %s...	正在上传 %s...
+View and manipulate windows.	查看和操作窗口。
+Viewing active mappings requires a connection to the kernel driver.	查看活动映射需要连接内核驱动程序。
+VirusTotal ReScan API error.	VirusTotal ReScan API 出错。
+VirusTotal ViewReport API error.	VirusTotal ViewReport API 出错。
+Volume file cache flushed to disk.	卷文件缓存已刷新到磁盘。
+WS watch is enabled.	WS 监视已启用。
+Waiting for response...	正在等待响应...
+Walking stack...	正在遍历调用栈...
+Warning: user-mode stack trace database is not enabled. Stack traces will not be displayed.	警告：用户模式堆栈跟踪数据库未启用，将不显示调用栈。
+Windows sockets could not be started.	无法启动 Windows 套接字。
+Windows was installed using legacy BIOS.	Windows 是通过传统 BIOS 安装的。
+Working sets emptied.	工作集已清空。
+Would you like to download the Canary build?	是否下载 Canary 版本？
+Would you like to download the Release build?	是否下载正式版本？
+Would you like to download the update?	是否下载该更新？
+Writing the dump failed (0x%08x).	写入转储失败（0x%08x）。
+You can take a look at the last analysis or upload it again now.	你可以查看上次分析结果，或现在重新上传。
+You can use an IPv4 or IPv6 address as the target or a fully qualified domain name (FQDN) or a website URL as the target.	目标可以是 IPv4 或 IPv6 地址，也可以是完全限定域名（FQDN）或网站 URL。
+You need to configure HybridAnalysis from the Options window > OnlineChecks page.	需要在“选项窗口 > OnlineChecks 页”中配置 HybridAnalysis。
+You need to configure VirusTotal from the Options window > OnlineChecks page.	需要在“选项窗口 > OnlineChecks 页”中配置 VirusTotal。
+You will need to provide administrator permission. Click Continue to complete this operation.	你需要提供管理员权限，点击“继续”完成此操作。
+You're running a pre-release build.	你正在运行预发布版本。
+You're running the latest version.	你正在运行最新版本。
+1 month	1 个月
+1 week	1 周
+Batch	批处理
+Brute force	暴力枚举
+CSR handles	CSR 句柄
+Custom	自定义
+Dark	深色
+Error	错误
+ETW handles	ETW 句柄
+Group %hu	组 %hu
+New credentials	新建凭据
+Ntdll handles	Ntdll 句柄
+Process handles	进程句柄
+Question	问题
+Registry handles	注册表句柄
+Resume	继续
+Stop	停止
+Warning	警告

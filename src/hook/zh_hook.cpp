@@ -2224,6 +2224,14 @@ static void LoadFonts(void)
         if (line[0] == (char)0xEF && line[1] == (char)0xBB && line[2] == (char)0xBF)
             line += 3;
 
+        // CRLF 文件按 '\n' 切完，行尾会剩一个 '\r'：不剥掉的话空行变成「无 TAB 的坏行」，
+        // 每份日志都会多一条假告警。这里统一剥掉，解析口径与 readme 的「LF 也行」一致。
+        {
+            size_t n = strlen(line);
+            while (n > 0 && line[n - 1] == '\r')
+                line[--n] = '\0';
+        }
+
         if (line[0] != '\0' && line[0] != '#')
         {
             tab = strchr(line, '\t');
@@ -2639,6 +2647,153 @@ static int AnsiToWide(LPCSTR text, int count, wchar_t* out, int outCch)
     return n;
 }
 
+// ===========================================================================
+// 消息框 / 任务对话框
+//
+// 为什么必须单独挂这一路：MessageBox 的正文不是普通 Static 控件，它由
+// user32 内部在 #32770 对话框里自绘，绘制时**不经过 user32!DrawTextW 的
+// 导出入口**（已用真 MessageBox 实测：探针日志里一条 [HIT ] 都没有）。
+// 所以只靠绘制型钩子永远翻不动消息框，只能在参数入口把 lpszText /
+// lpszCaption 换掉再转交原函数。
+//
+// 覆盖：MessageBoxW / MessageBoxExW / MessageBoxIndirectW / MessageBoxA
+//       TaskDialogIndirect / TaskDialog（SI 的「确认/警告」走这套）
+// 不覆盖按钮文字（按钮串已在词典里，且 TASKDIALOGCONFIG 的按钮数组是
+// 调用方栈上的只读结构，逐个改要连锁复制，暂不动）。
+// ===========================================================================
+#define MSGBOX_BUF 8192
+
+typedef int  (WINAPI *MessageBoxW_t)(HWND, LPCWSTR, LPCWSTR, UINT);
+typedef int  (WINAPI *MessageBoxExW_t)(HWND, LPCWSTR, LPCWSTR, UINT, WORD);
+typedef int  (WINAPI *MessageBoxA_t)(HWND, LPCSTR, LPCSTR, UINT);
+typedef int  (WINAPI *MessageBoxIndirectW_t)(const MSGBOXPARAMSW*);
+
+static void* g_realMessageBoxW         = NULL;
+static void* g_realMessageBoxExW       = NULL;
+static void* g_realMessageBoxA         = NULL;
+static void* g_realMessageBoxIndirectW = NULL;
+
+// 把一段消息框文本翻成中文；成功返回 dst，失败返回 NULL（调用方用原串）
+static const wchar_t* TrMsgField(const wchar_t* src, wchar_t* dst, const wchar_t* what)
+{
+    if (!src || !*src)
+        return NULL;
+    if (!TryTranslate(src, dst, MSGBOX_BUF))
+        return NULL;
+    Logf(L"[HIT ] MessageBox %s \"%s\" -> \"%s\"", what, src, dst);
+    return dst;
+}
+
+static int WINAPI HookMessageBoxW(HWND hwnd, LPCWSTR text, LPCWSTR caption, UINT type)
+{
+    static __declspec(thread) wchar_t tBuf[MSGBOX_BUF];
+    static __declspec(thread) wchar_t cBuf[MSGBOX_BUF];
+    const wchar_t* t = text;
+    const wchar_t* c = caption;
+
+    if (TrMsgField(text, tBuf, L"text"))      t = tBuf;
+    if (TrMsgField(caption, cBuf, L"caption")) c = cBuf;
+
+    return ((MessageBoxW_t)g_realMessageBoxW)(hwnd, t, c, type);
+}
+
+static int WINAPI HookMessageBoxExW(HWND hwnd, LPCWSTR text, LPCWSTR caption, UINT type, WORD lang)
+{
+    static __declspec(thread) wchar_t tBuf[MSGBOX_BUF];
+    static __declspec(thread) wchar_t cBuf[MSGBOX_BUF];
+    const wchar_t* t = text;
+    const wchar_t* c = caption;
+
+    if (TrMsgField(text, tBuf, L"text"))      t = tBuf;
+    if (TrMsgField(caption, cBuf, L"caption")) c = cBuf;
+
+    return ((MessageBoxExW_t)g_realMessageBoxExW)(hwnd, t, c, type, lang);
+}
+
+// A 版统一转到 W 版：SI 全是 Unicode，A 版只是少数插件的兼容调用
+static int WINAPI HookMessageBoxA(HWND hwnd, LPCSTR text, LPCSTR caption, UINT type)
+{
+    static __declspec(thread) wchar_t tW[MSGBOX_BUF];
+    static __declspec(thread) wchar_t cW[MSGBOX_BUF];
+    int r;
+
+    tW[0] = 0;
+    cW[0] = 0;
+    if (text)    AnsiToWide(text, -1, tW, MSGBOX_BUF);
+    if (caption) AnsiToWide(caption, -1, cW, MSGBOX_BUF);
+
+    r = HookMessageBoxW(hwnd, tW[0] ? tW : NULL, cW[0] ? cW : NULL, type);
+    (void)g_realMessageBoxA;
+    return r;
+}
+
+static int WINAPI HookMessageBoxIndirectW(const MSGBOXPARAMSW* p)
+{
+    static __declspec(thread) MSGBOXPARAMSW paramCopy;
+    static __declspec(thread) wchar_t tBuf[MSGBOX_BUF];
+    static __declspec(thread) wchar_t cBuf[MSGBOX_BUF];
+    const wchar_t* t;
+    const wchar_t* c;
+
+    if (!p)
+        return ((MessageBoxIndirectW_t)g_realMessageBoxIndirectW)(p);
+
+    paramCopy = *p;
+    t = TrMsgField(p->lpszText, tBuf, L"text");
+    c = TrMsgField(p->lpszCaption, cBuf, L"caption");
+    if (t) paramCopy.lpszText = t;
+    if (c) paramCopy.lpszCaption = c;
+
+    return ((MessageBoxIndirectW_t)g_realMessageBoxIndirectW)(&paramCopy);
+}
+
+// ---- 任务对话框（SI 的确认框/错误框走 TaskDialog，样式比 MessageBox 现代）----
+typedef HRESULT (WINAPI *TaskDialogIndirect_t)(const TASKDIALOGCONFIG*, int*, int*, BOOL*);
+typedef HRESULT (WINAPI *TaskDialog_t)(HWND, HINSTANCE, LPCWSTR, LPCWSTR, LPCWSTR, UINT, LPCWSTR, INT_PTR*);
+
+static void* g_realTaskDialogIndirect = NULL;
+static void* g_realTaskDialog         = NULL;
+
+static HRESULT WINAPI HookTaskDialogIndirect(const TASKDIALOGCONFIG* cfg, int* btn, int* radio, BOOL* verify)
+{
+    static __declspec(thread) TASKDIALOGCONFIG cfgCopy;
+    static __declspec(thread) wchar_t b1[MSGBOX_BUF], b2[MSGBOX_BUF], b3[MSGBOX_BUF];
+    static __declspec(thread) wchar_t b4[MSGBOX_BUF], b5[MSGBOX_BUF];
+    const wchar_t* r;
+
+    if (!cfg)
+        return ((TaskDialogIndirect_t)g_realTaskDialogIndirect)(cfg, btn, radio, verify);
+
+    cfgCopy = *cfg;
+
+    if ((r = TrMsgField(cfg->pszWindowTitle, b1, L"title")) != NULL)
+        cfgCopy.pszWindowTitle = r;
+    if ((r = TrMsgField(cfg->pszMainInstruction, b2, L"main")) != NULL)
+        cfgCopy.pszMainInstruction = r;
+    if ((r = TrMsgField(cfg->pszContent, b3, L"content")) != NULL)
+        cfgCopy.pszContent = r;
+    if ((r = TrMsgField(cfg->pszVerificationText, b4, L"verify")) != NULL)
+        cfgCopy.pszVerificationText = r;
+    if ((r = TrMsgField(cfg->pszFooter, b5, L"footer")) != NULL)
+        cfgCopy.pszFooter = r;
+
+    return ((TaskDialogIndirect_t)g_realTaskDialogIndirect)(&cfgCopy, btn, radio, verify);
+}
+
+static HRESULT WINAPI HookTaskDialog(HWND hwnd, HINSTANCE inst, LPCWSTR title, LPCWSTR main, LPCWSTR content,
+                                     UINT buttons, LPCWSTR icon, INT_PTR* result)
+{
+    static __declspec(thread) wchar_t b1[MSGBOX_BUF], b2[MSGBOX_BUF], b3[MSGBOX_BUF];
+    const wchar_t *t = title, *m = main, *c = content;
+    const wchar_t* r;
+
+    if ((r = TrMsgField(title, b1, L"title")) != NULL)   t = r;
+    if ((r = TrMsgField(main, b2, L"main")) != NULL)     m = r;
+    if ((r = TrMsgField(content, b3, L"content")) != NULL) c = r;
+
+    return ((TaskDialog_t)g_realTaskDialog)(hwnd, inst, t, m, c, buttons, icon, result);
+}
+
 static LRESULT WINAPI HookSendMessageW(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     SendMessageW_t real = (SendMessageW_t)g_realSendMessageW;
@@ -2873,6 +3028,210 @@ static BOOL WINAPI HookExtTextOutW(HDC hdc, int x, int y, UINT options, const RE
 
     Logf(L"[HIT ] ExtTextOutW \"%s\" -> \"%s\"", oldText, translated);
     return ((ExtTextOutW_t)g_realExtTextOutW)(hdc, x, y, options, lprect, translated, (UINT)n, lpDx);
+}
+
+// ---------------------------------------------------------------------------
+// Direct2D / DirectWrite 菜单汉化
+// ===========================================================================
+//
+// System Informer 4.x 的右键菜单 / 主菜单下拉 / 托盘菜单走的是
+// phlib\controls\emenudx.cpp 那条 D3D11 + Direct2D + DirectWrite 自绘路径。
+// 菜单项文字在 IDWriteFactory::CreateTextLayout 这一步被「烤」进
+// IDWriteTextLayout 对象，之后 D2DDeviceContext::DrawTextLayout 只负责把已经
+// 排版好的字形画到 D3D 表面 —— 整条路径完全不经过 GDI 的 DrawTextW /
+// TextOutW / ExtTextOutW，所以前面那些钩子一个都碰不到，右键菜单整列英文。
+//
+// 全仓扫描 CreateTextLayout 调用点：只有 emenudx.cpp 三处（3737/3765/5828），
+// 全部是菜单（主文本 / 快捷键 / 图标 glyph）。所以 hook CreateTextLayout 命中
+// 的就一定是菜单，不会误伤其他 DWrite 控件。
+//
+// 实施办法：
+//   1. 启动时 LoadLibrary("dwrite.dll") + 拿 DWriteCreateFactory；
+//   2. 调一次拿到临时 IDWriteFactory，从它身上读出 vtable 指针；
+//   3. 在 vtable 里把 CreateTextLayout（COM 接口 vtable 第 13 个槽位，
+//      0-based = 12）替换成我们的 HookCreateTextLayout，原指针存到全局。
+//   4. 立即 Release 临时 factory。vtable 是 COM 类级共享的，patch 一次后，
+//      进程内后续所有 IDWriteFactory 实例（含 si.exe 自己懒初始化的
+//      SharedDWriteFactory）都会走我们的 hook。
+//
+// 菜单上下文裁决：
+//   emenudx.cpp:4041-4056 在调用前已经把 '&' 加速键剥掉了（"&Free" -> "Free"），
+//   但词典里菜单段写的是 "&Free" -> "释放"，通用段写的是 "Free" -> "可用"（内存列）。
+//   既然 DWrite 路径 100% 是菜单，HookCreateTextLayout 里就**先查带 & 的形态**
+//   （"&Free"），再查原串（"Free"），让菜单译文优先。
+// ===========================================================================
+
+// IDWriteFactory::CreateTextLayout 的 COM 方法签名（this 是隐藏首参）
+typedef HRESULT (WINAPI *CreateTextLayout_t)(
+    void* This,
+    const wchar_t* text,
+    UINT32 textLength,
+    void* textFormat,
+    float maxWidth,
+    float maxHeight,
+    void** layout);
+
+static CreateTextLayout_t g_realCreateTextLayout = NULL;
+static BOOL g_dwritePatched = FALSE;
+
+static HRESULT WINAPI HookCreateTextLayout(
+    void* This,
+    const wchar_t* text,
+    UINT32 textLength,
+    void* textFormat,
+    float maxWidth,
+    float maxHeight,
+    void** layout)
+{
+    wchar_t buf[MAX_TEXTLEN];
+    wchar_t translated[MAX_TEXTLEN];
+    const wchar_t* use = text;
+    UINT32 useLen = textLength;
+
+    if (!g_realCreateTextLayout || !text || !layout)
+        return ((CreateTextLayout_t)g_realCreateTextLayout)(This, text, textLength,
+                                                            textFormat, maxWidth, maxHeight, layout);
+
+    // textLength == UINT32_MAX 表示 null-terminated
+    if (textLength == UINT32_MAX)
+        textLength = (UINT32)wcslen(text);
+
+    if (textLength == 0 || textLength >= MAX_TEXTLEN)
+        return ((CreateTextLayout_t)g_realCreateTextLayout)(This, text, textLength,
+                                                            textFormat, maxWidth, maxHeight, layout);
+
+    memcpy(buf, text, textLength * sizeof(wchar_t));
+    buf[textLength] = L'\0';
+
+    if (!g_doTranslate)
+    {
+        if (g_logAll)
+            Logf(L"[dwrite] \"%s\"", buf);
+        return ((CreateTextLayout_t)g_realCreateTextLayout)(This, text, textLength,
+                                                            textFormat, maxWidth, maxHeight, layout);
+    }
+
+    // 菜单路径：先按原串走通用翻译（精确 → 去 & 形态 → 通配符模式），
+    // 未命中再查 "&" + 原串（emenudx 在排版前已经把加速键 & 剥掉了，
+    // 而词典里不少菜单串是以 "&xxx" 形态存的，比如 &Affinity / &Boost）。
+    const wchar_t* hit = TryTranslate(buf, translated, MAX_TEXTLEN);
+
+    if (!hit)
+    {
+        wchar_t amp[MAX_TEXTLEN];
+
+        amp[0] = L'&';
+        wcsncpy_s(amp + 1, MAX_TEXTLEN - 1, buf, _TRUNCATE);
+        hit = TryTranslate(amp, translated, MAX_TEXTLEN);
+    }
+
+    if (!hit)
+    {
+        MissNote("DWrite", buf, NULL, (HDC)This, 0);
+        return ((CreateTextLayout_t)g_realCreateTextLayout)(This, text, textLength,
+                                                            textFormat, maxWidth, maxHeight, layout);
+    }
+
+    use = hit;
+    useLen = (UINT32)wcslen(hit);
+    Logf(L"[HIT ] DWrite \"%s\" -> \"%s\"", buf, use);
+
+    {
+        RealGuard zh_guard;
+        return ((CreateTextLayout_t)g_realCreateTextLayout)(This, use, useLen,
+                                                            textFormat, maxWidth, maxHeight, layout);
+    }
+}
+
+// 临时拿到一个 IDWriteFactory 实例以便读出 vtable 并 patch。
+// IID_IDWriteFactory {0xb859ee5a,0xd838,0x4b5b,{0xa2,0xe8,0x1a,0xdc,0x7d,0x93,0xdb,0x48}}
+// 取值以 SDK 头 dwrite.h（10.0.26100，DEFINE_GUID(IID_IDWriteFactory, 0xb859ee5a,0xd838,0x4b5b,0xa2,0xe8,0x1a,0xdc,0x7d,0x93,0xdb,0x48)）为准。
+// 之前误写成 {...,0x435b,{0xa7,0x3c,0x05,0xe9,...}}（那是另一个接口的 GUID），
+// 导致 DWriteCreateFactory 返回 E_NOINTERFACE(0x80004002)，整个 vtable patch 从未发生过。
+static const IID IID_IDWriteFactory_ = {
+    0xb859ee5a, 0xd838, 0x4b5b, { 0xa2, 0xe8, 0x1a, 0xdc, 0x7d, 0x93, 0xdb, 0x48 }
+};
+
+// IDWriteFactory vtable 槽位（0-based，按 dwrite.h 10.0.26100 实际顺序数过）：
+//   0..2   IUnknown (QueryInterface/AddRef/Release)
+//   3      GetSystemFontCollection
+//   4      CreateCustomFontCollection
+//   5      RegisterFontCollectionLoader
+//   6      UnregisterFontCollectionLoader
+//   7      CreateFontFileReference
+//   8      CreateCustomFontFileReference
+//   9      CreateFontFace
+//   10     CreateRenderingParams
+//   11     CreateMonitorRenderingParams
+//   12     CreateCustomRenderingParams
+//   13     RegisterFontFileLoader
+//   14     UnregisterFontFileLoader
+//   15     CreateTextFormat
+//   16     CreateTypography
+//   17     GetGdiInterop
+//   18     CreateTextLayout   <-- 我们要 patch 的槽位
+//   19     CreateGdiCompatibleTextLayout
+#define DWRITE_VTBL_CREATE_TEXT_LAYOUT 18
+
+static void EnableDWriteMenuHook(void)
+{
+    HMODULE dwrite;
+    HRESULT (WINAPI *pCreateFactory)(DWORD, REFIID, void**);
+    void* factory = NULL;
+    void** vtbl = NULL;
+    void* oldProc = NULL;
+    DWORD oldProt;
+    HRESULT hr;
+
+    dwrite = LoadLibraryW(L"dwrite.dll");
+    if (!dwrite)
+    {
+        Logf(L"[dwrite] LoadLibrary failed err=%lu", GetLastError());
+        return;
+    }
+
+    pCreateFactory = (decltype(pCreateFactory))GetProcAddress(dwrite, "DWriteCreateFactory");
+    if (!pCreateFactory)
+    {
+        Logf(L"[dwrite] GetProcAddress(DWriteCreateFactory) failed err=%lu", GetLastError());
+        return;
+    }
+
+    // DWRITE_FACTORY_TYPE_SHARED = 0
+    hr = pCreateFactory(0, IID_IDWriteFactory_, &factory);
+    if (FAILED(hr) || !factory)
+    {
+        Logf(L"[dwrite] DWriteCreateFactory hr=0x%08lx", (unsigned long)hr);
+        return;
+    }
+
+    // COM 对象第一个字段就是 vtable 指针
+    vtbl = *(void***)factory;
+    oldProc = vtbl[DWRITE_VTBL_CREATE_TEXT_LAYOUT];
+
+    Logf(L"[dwrite] factory=%p vtbl=%p vtbl[%d]=%p",
+         factory, (void*)vtbl, DWRITE_VTBL_CREATE_TEXT_LAYOUT, oldProc);
+
+    // patch vtable 槽位。vtable 在 dwrite.dll 的 .rdata 段，需要先改保护属性。
+    if (VirtualProtect(&vtbl[DWRITE_VTBL_CREATE_TEXT_LAYOUT], sizeof(void*),
+                       PAGE_READWRITE, &oldProt))
+    {
+        vtbl[DWRITE_VTBL_CREATE_TEXT_LAYOUT] = (void*)&HookCreateTextLayout;
+        VirtualProtect(&vtbl[DWRITE_VTBL_CREATE_TEXT_LAYOUT], sizeof(void*),
+                       oldProt, &oldProt);
+        g_realCreateTextLayout = (CreateTextLayout_t)oldProc;
+        g_dwritePatched = TRUE;
+        Logf(L"[dwrite] patch CreateTextLayout OK -> %p (real=%p)",
+             (void*)&HookCreateTextLayout, oldProc);
+    }
+    else
+    {
+        Logf(L"[dwrite] VirtualProtect failed err=%lu", GetLastError());
+    }
+
+    // 释放临时 factory。vtable patch 是类级的，不影响后续使用。
+    typedef ULONG (WINAPI *Release_t)(void*);
+    ((Release_t)vtbl[2])(factory);
 }
 
 // DrawTextA —— ANSI 变体，兜底用
@@ -3259,6 +3618,15 @@ static void InstallHooks(void)
             // 只用来维护「当前绘制窗口」，不改变任何行为（见 HookBeginPaint 上方说明）
             { L"user32.dll", "BeginPaint",   (LPVOID)&HookBeginPaint,    &g_realBeginPaint,   TRUE },
             { L"user32.dll", "EndPaint",     (LPVOID)&HookEndPaint,      &g_realEndPaint,     TRUE },
+            // 消息框/任务对话框：参数入口型钩子。绘制型钩子打不到 #32770 内部自绘
+            // 的正文，必须在调用前把 lpszText/lpszCaption 换成译文。
+            { L"user32.dll", "MessageBoxW",         (LPVOID)&HookMessageBoxW,         &g_realMessageBoxW,         TRUE },
+            { L"user32.dll", "MessageBoxExW",       (LPVOID)&HookMessageBoxExW,       &g_realMessageBoxExW,       TRUE },
+            { L"user32.dll", "MessageBoxA",         (LPVOID)&HookMessageBoxA,         &g_realMessageBoxA,         TRUE },
+            { L"user32.dll", "MessageBoxIndirectW", (LPVOID)&HookMessageBoxIndirectW, &g_realMessageBoxIndirectW, TRUE },
+            // comctl32 的 TaskDialog 不在表里：钩子 DLL 注入时 comctl32 往往还没被
+            // 加载（MH_CreateHookApi 会返回 MODULE_NOT_FOUND），必须等它出现再挂。
+            // 见 EnableTaskDialogHooksThread。
         };
         wchar_t line[640];
         int off = 0;
@@ -3291,6 +3659,44 @@ static void EnableHooks(void)
     Logf(L"[addr] SMW=%p DTW=%p DTEW=%p DTA=%p TOW=%p TOA=%p XTOW=%p XTOA=%p",
          g_realSendMessageW, g_realDrawTextW, g_realDrawTextExW, g_realDrawTextA,
          g_realTextOutW, g_realTextOutA, g_realExtTextOutW, g_realExtTextOutA);
+}
+
+// comctl32 迟到的 TaskDialog 钩子。
+// 为什么不在钩子表里一次建好：MH_CreateHookApi 需要模块已在进程内，而 SI 启动时
+// 注入发生在 comctl32 加载之前，日志里就是 TaskDialogIndirect=11(MODULE_NOT_FOUND)
+// —— 静默不生效。这里轮询等模块出现，再建钩并启用。
+// 不在此时强行 LoadLibrary：加载到 v5 comctl32 会顶掉清单里的 v6，控件主题会变。
+static DWORD WINAPI EnableTaskDialogHooksThread(LPVOID param)
+{
+    HMODULE comctl;
+    MH_STATUS s1 = MH_ERROR_NOT_INITIALIZED, s2 = MH_ERROR_NOT_INITIALIZED, se = MH_ERROR_NOT_INITIALIZED;
+    int i;
+
+    (void)param;
+
+    for (i = 0; i < 150; i++)            // 最长等 30 秒
+    {
+        comctl = GetModuleHandleW(L"comctl32.dll");
+        if (comctl)
+            break;
+        Sleep(200);
+    }
+
+    if (!comctl)
+    {
+        Logf(L"[taskdlg] comctl32 在 30 秒内未加载，TaskDialog 钩子跳过");
+        return 0;
+    }
+
+    s1 = MH_CreateHookApi(L"comctl32.dll", "TaskDialogIndirect", (LPVOID)&HookTaskDialogIndirect, &g_realTaskDialogIndirect);
+    s2 = MH_CreateHookApi(L"comctl32.dll", "TaskDialog",         (LPVOID)&HookTaskDialog,         &g_realTaskDialog);
+    if (s1 == MH_OK || s2 == MH_OK)
+        se = MH_EnableHook(MH_ALL_HOOKS);
+
+    Logf(L"[taskdlg] comctl32=%p TaskDialogIndirect=%d(%s) TaskDialog=%d(%s) enable=%d(%s) real=%p/%p",
+         (void*)comctl, (int)s1, MhStr(s1), (int)s2, MhStr(s2), (int)se, MhStr(se),
+         g_realTaskDialogIndirect, g_realTaskDialog);
+    return 0;
 }
 
 // 与启动器握手：Ready=钩已建好；Go=启动器允许启用；Done=已启用完成
@@ -3334,6 +3740,14 @@ static DWORD WINAPI EnableThread(LPVOID param)
     }
 
     EnableHooks();
+
+    // Direct2D/DirectWrite 菜单汉化：在 GDI 钩子启用之后再 patch DWrite vtable。
+    // 必须等到加载器锁释放（本线程就是等 Go 事件后才走到这里），LoadLibrary 才安全。
+    EnableDWriteMenuHook();
+
+    // TaskDialog 钩子等 comctl32 就位后再挂（见上面的说明）
+    if (!CreateThread(NULL, 0, EnableTaskDialogHooksThread, NULL, 0, NULL))
+        Logf(L"[taskdlg] 线程创建失败，TaskDialog 钩子未安装");
 
     if (evDone)
         SetEvent(evDone);

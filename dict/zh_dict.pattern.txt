@@ -51,3 +51,8 @@
 # ---------------------------------------------------------------------------
 Copy "*"	复制"*"
 Ser&vice (*)	服务(*)
+
+* hours and * minutes ago	* 小时 * 分钟前
+* hours and * minutes	* 小时 * 分钟
+Last update check: * (* hours and * minutes ago)	上次检查更新：*（* 小时 * 分钟前）
+Next update check: * (* hours and * minutes)	下次检查更新：*（* 小时 * 分钟）

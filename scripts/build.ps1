@@ -161,7 +161,47 @@ finally {
 }
 
 # ---------------------------------------------------------------- 词典 + 模式表 + 字体表
-Copy-Item $dictSrc (Join-Path $dist 'zh_dict.txt') -Force
+# 词典在这里做一次「手工补丁层」合并：dict\zh_dict.extra.txt 现在不在
+# build_zh_dict.py / organize.py 的流水线里（那两步只吃 passolo / base /
+# ui_zh / ui_gap），重跑流水线会把这几轮补的词条整体冲掉。构建期合并保证
+# 无论 dict\zh_dict.txt 是不是刚被重建过，dist 出来的都是完整的。
+$extraSrc = Join-Path $repo 'dict\zh_dict.extra.txt'
+$en = New-Object System.Text.UTF8Encoding($false)
+$mainLines  = [IO.File]::ReadAllLines($dictSrc, $en)
+$extraLines = if (Test-Path $extraSrc) { [IO.File]::ReadAllLines($extraSrc, $en) } else { @() }
+
+$outLines = New-Object System.Collections.ArrayList
+$keyIndex = @{}
+foreach ($l in $mainLines) {
+    if ($l.StartsWith('#') -or $l.IndexOf("`t") -lt 0) { [void]$outLines.Add($l); continue }
+    $k = $l.Substring(0, $l.IndexOf("`t")).Trim()
+    if (-not $k) { [void]$outLines.Add($l); continue }
+    $lk = $k.ToLowerInvariant()
+    if ($keyIndex.ContainsKey($lk)) { continue }
+    $keyIndex[$lk] = $outLines.Count
+    [void]$outLines.Add($l)
+}
+
+$addCount = 0; $ovrCount = 0
+foreach ($l in $extraLines) {
+    if ($l.StartsWith('#') -or $l.IndexOf("`t") -lt 0) { continue }
+    $k = $l.Substring(0, $l.IndexOf("`t")).Trim()
+    if (-not $k) { continue }
+    $lk = $k.ToLowerInvariant()
+    if ($keyIndex.ContainsKey($lk)) {
+        $pos = $keyIndex[$lk]
+        if ($outLines[$pos] -ne $l) { $outLines[$pos] = $l; $ovrCount++ }
+    } else {
+        $keyIndex[$lk] = $outLines.Count
+        [void]$outLines.Add($l)
+        $addCount++
+    }
+}
+
+[IO.File]::WriteAllText((Join-Path $dist 'zh_dict.txt'), (($outLines -join "`n") + "`n"), $en)
+Write-Output ''
+Write-Output ("词典合并 : 主词典 {0} 行 + 手工补丁 {1} 行（新增 {2} / 覆盖 {3}）→ 输出 {4} 行" -f `
+              $mainLines.Count, $extraLines.Count, $addCount, $ovrCount, $outLines.Count)
 Copy-Item $patSrc  (Join-Path $dist 'zh_dict.pattern.txt') -Force
 Copy-Item $fontSrc (Join-Path $dist 'zh_font.txt') -Force
 
