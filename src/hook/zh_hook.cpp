@@ -955,6 +955,7 @@ static HHOOK          g_callWndHook = NULL;
 struct DictEntry { const wchar_t* en; const wchar_t* zh; DWORD hash; };
 static DictEntry     g_entries[MAX_ENTRIES];
 static int           g_entryCount = 0;
+static int           g_aliasCount = 0;      // 其中「去掉加速键 &」自动生成的别名条数
 static wchar_t       g_pool[MAX_ENTRIES * 128];
 static DWORD         g_poolUsed = 0;
 
@@ -985,6 +986,26 @@ static const wchar_t* PoolDup(const wchar_t* s)
     return dst;
 }
 
+// 词典里是否已有这个原文键（先按 hash 预筛，避免每次全表比较）
+static BOOL DictHasKey(const wchar_t* key)
+{
+    DWORD h;
+
+    if (!key || !*key)
+        return FALSE;
+
+    h = HashStr(key);
+    for (int i = 0; i < g_entryCount; i++)
+    {
+        if (g_entries[i].hash != h)
+            continue;
+        if (_wcsicmp(g_entries[i].en, key) == 0)
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
 static void AddEntry(const wchar_t* en, const wchar_t* zh)
 {
     if (!en || !zh || !*en || !*zh)
@@ -999,6 +1020,31 @@ static void AddEntry(const wchar_t* en, const wchar_t* zh)
 
     g_entries[g_entryCount].hash = HashStr(en);
     g_entryCount++;
+
+    // 含加速键 & 的菜单串再补一份「去掉 &」的别名。菜单绘制时 emenudx 先把
+    // & 剥掉才交给排版（源码 L"Create dump fi&le" 实际画成 "Create dump file"），
+    // 词典若只有带 & 的形态就永远命中不了 —— 这类遗漏只会在运行期以英文出现。
+    // 别名与已有键同名时不覆盖（原键更精确）。
+    if (wcschr(en, L'&'))
+    {
+        wchar_t bare[MAX_TEXTLEN];
+        int k = 0;
+
+        for (int i = 0; en[i] && k < MAX_TEXTLEN - 1; i++)
+        {
+            if (en[i] != L'&')
+                bare[k++] = en[i];
+        }
+        bare[k] = L'\0';
+
+        if (k > 0 && !DictHasKey(bare))
+        {
+            int before = g_entryCount;
+            AddEntry(bare, zh);         // bare 已不含 &，不会再次递归
+            if (g_entryCount > before)
+                g_aliasCount++;
+        }
+    }
 }
 
 // 最近一次命中的查询缓存
@@ -1236,8 +1282,8 @@ static void LoadDict(void)
     }
 
     HeapFree(GetProcessHeap(), 0, raw);
-    Logf(L"[dict] 扫描 %d 行（空 %d / 注释 %d / 无TAB %d / 转换失败 %d），载入 %d 条",
-         lines, nEmpty, nComment, nNoTab, nConvFail, g_entryCount);
+    Logf(L"[dict] 扫描 %d 行（空 %d / 注释 %d / 无TAB %d / 转换失败 %d），载入 %d 条（其中去&别名 %d 条）",
+         lines, nEmpty, nComment, nNoTab, nConvFail, g_entryCount, g_aliasCount);
 }
 
 // ===========================================================================

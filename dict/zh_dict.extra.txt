@@ -1947,3 +1947,6 @@ PID (LXSS)	PID（LXSS）
 TID (LXSS)	TID（LXSS）
 CF Guard	CF 防护
 XF Guard	XF 防护
+Delegate to client	委托给客户端
+Reset to defaults	重置为默认值
+Reset all to defaults	全部重置为默认值
