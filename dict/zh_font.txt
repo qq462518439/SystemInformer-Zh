@@ -57,7 +57,8 @@
 # 真遇到了表现为某处文字仍是 Microsoft Sans Serif 8 号。
 
 # 唯一的规则：SI 写死的应用字体，8 号（-11px）→ 雅黑 UI 9 号（-12px）
-Microsoft Sans Serif|8	Microsoft YaHei UI|9
+# [A/B 试验] Microsoft Sans Serif|8	Microsoft YaHei UI|9
+# 保留原名：西文继续用 Microsoft Sans Serif（字形比雅黑拉丁更粗实），中文由 GDI 字体链接回落雅黑，与 3.2 版观感一致
 
 # ===========================================================================
 # 附：状态栏/菜单这类小字的「锯齿感」不是字体表能治的
@@ -76,3 +77,15 @@ Microsoft Sans Serif|8	Microsoft YaHei UI|9
 #       "Microsoft YaHei UI|9 -> Microsoft YaHei UI|10"），代价是列表行高、菜单和
 #       页签一起变大，属于改版式，不是改渲染，按需再开。
 # ===========================================================================
+
+# ── 与 3.2 版对比结论（2026-11-12，实证）─────────────────────────────
+# 环境：系统 AppliedDPI=216（225% 缩放），物理 3840×2160，逻辑 1707×960。
+# 3.2 版（D:\Program Files\SystemInfomer-CN，官方 lang\zh-CN.json）状态栏：
+#   8pt@216DPI = 24px，字体 Microsoft Sans Serif + GDI 字体链接回落微软雅黑 → 笔画粗实饱满。
+# 旧策略（整条替换 Microsoft Sans Serif|8 → Microsoft YaHei UI|9）反而更细更虚：
+#   1) Microsoft YaHei UI 笔画比微软雅黑常规细一档；
+#   2) ClearType 细笔画在深色背景上彩色 fringe 更明显，观感"毛刺"。
+# 实测：停用替换、保留原名后，状态栏/菜单/列表字重立刻与 3.2 一致，
+#   字号不用放大、版式零变化、无需重启系统。
+# 结论：状态栏"锯齿感/发虚"的根因不是字号太小，而是字体名被替换成 YaHei UI。
+# 证据图：%TEMP%\cmp_3way.png（3.2 / 4.0 旧 YaHei UI / 4.0 新原名 三段同尺度对比）
