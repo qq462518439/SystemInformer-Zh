@@ -1971,3 +1971,20 @@ MD5 code by Jouni Malinen	MD5 代码由 Jouni Malinen 提供
 SHA1 code by Filip Navara, based on code by Steve Reid	SHA1 代码由 Filip Navara 提供，基于 Steve Reid 的代码
 - thank you for your additions!	— 感谢您补充的内容！
 Donors - thank you for your support!	捐赠者 — 感谢您的支持！
+
+# ── ToolStatus 插件「自定义状态栏」条目名（statusbar.c:153-193 StatusBarGetText）──
+CPU usage	CPU 使用率
+Number of processes	进程数
+Number of threads	线程数
+Number of handles	句柄数
+Number of visible items	可见项数
+Number of selected items	已选项数
+Interval status	刷新间隔
+I/O read+other	I/O 读+其他
+I/O write	I/O 写
+Free physical memory	可用物理内存
+Max. CPU process	CPU 最高进程
+Max. I/O process	I/O 最高进程
+Selected process WS	所选进程工作集
+Selected process private bytes	所选进程私有字节
+KSI status	KSI 状态
