@@ -4776,3 +4776,35 @@ BOOL WINAPI DllMain(HINSTANCE self, DWORD reason, LPVOID reserved)
     return TRUE;
 }
 
+// 供宿主内插件（ToolStatus 状态栏）在测量文本宽度之前取译文。
+// 状态栏原始流程是「按英文原文 GetTextExtentPoint32 测宽 → SB_SETTEXT 时才被本
+// 层换成中文」，中文普遍比英文宽，于是最后一列（如 "17.53%"）越过 part 右边
+// 界被裁掉。插件先取译文再测宽，测量与绘制就对上了。
+// 返回 TRUE 表示命中词典（TranslatedText 为译文）；否则 TranslatedText 为原文。
+extern "C" __declspec(dllexport) BOOL __stdcall ZhTranslateTextW(
+    const wchar_t* SourceText,
+    wchar_t* TranslatedText,
+    int TranslatedTextCapacity
+    )
+{
+    if (!TranslatedText || TranslatedTextCapacity < 2)
+        return FALSE;
+
+    TranslatedText[0] = L'\0';
+
+    if (!SourceText || !*SourceText)
+        return FALSE;
+
+    if (g_doTranslate)
+    {
+        if (TryTranslate(SourceText, TranslatedText, TranslatedTextCapacity) == TranslatedText)
+            return TRUE;
+    }
+
+    // 未命中时 TryTranslate 已把原文写进 TranslatedText，这里兜底复制一次。
+    if (!TranslatedText[0])
+        wcsncpy_s(TranslatedText, (size_t)TranslatedTextCapacity, SourceText, _TRUNCATE);
+
+    return FALSE;
+}
+
