@@ -2423,6 +2423,39 @@ static const wchar_t* TryTranslate(const wchar_t* s, wchar_t* out, int outCap)
             if (!r && hasAmp && k > 0)
                 r = MatchPatterns(stripped, out, outCap);
         }
+
+        // 4) 去掉前导空白后重试。进程悬停信息板这类串是按行带缩进画的
+        //    （L"    Signer: ..."），词典里不该为排版缩进单独建键。
+        if (!r)
+        {
+            int lead = 0, rest;
+
+            while (out[lead] == L' ' || out[lead] == L'\t')
+                lead++;
+
+            rest = len - lead;
+            if (lead > 0 && rest > 0)
+            {
+                wchar_t t2[MAX_TEXTLEN], z2[MAX_TEXTLEN];
+
+                r = LookupDict(out + lead, rest, z2, MAX_TEXTLEN);
+
+                if (!r && g_patCount > 0)
+                {
+                    wcsncpy_s(t2, MAX_TEXTLEN, out + lead, _TRUNCATE);
+                    r = MatchPatterns(t2, z2, MAX_TEXTLEN);
+                }
+
+                if (r)
+                {
+                    wchar_t joined[MAX_TEXTLEN];
+
+                    wcsncpy_s(joined, MAX_TEXTLEN, out, (size_t)lead);
+                    wcsncpy_s(joined + lead, MAX_TEXTLEN - lead, z2, _TRUNCATE);
+                    wcsncpy_s(out, outCap, joined, _TRUNCATE);
+                }
+            }
+        }
     }
 
     (void)h;
@@ -2673,14 +2706,74 @@ static void* g_realMessageBoxExW       = NULL;
 static void* g_realMessageBoxA         = NULL;
 static void* g_realMessageBoxIndirectW = NULL;
 
-// 把一段消息框文本翻成中文；成功返回 dst，失败返回 NULL（调用方用原串）
+// 把一段消息框/任务对话框文本翻成中文；成功返回 dst，失败返回 NULL（调用方用原串）
+// 单行整串先试一次；含换行则按行拆开逐行查（TaskDialog 的 content 常写成
+// "Version: %s\r\nDownload size: %s\r\n\r\n<A HREF=...>…</A>" 这种多行串）。
+// 这里改的是调用参数而非绘制过程，宿主拿到新串会自己重新排版，逐行替换不会糊。
+#define MSGLINE_CHARS 1024
+
 static const wchar_t* TrMsgField(const wchar_t* src, wchar_t* dst, const wchar_t* what)
 {
+    const wchar_t* p;
+    int out = 0;
+    BOOL any = FALSE;
+
     if (!src || !*src)
         return NULL;
-    if (!TryTranslate(src, dst, MSGBOX_BUF))
+
+    if (TryTranslate(src, dst, MSGBOX_BUF))
+    {
+        Logf(L"[HIT ] MessageBox %s \"%s\" -> \"%s\"", what, src, dst);
+        return dst;
+    }
+
+    if (!wcspbrk(src, L"\r\n"))
+        return NULL;                    // 单行且未命中：不折腾
+
+    for (p = src; ; )
+    {
+        const wchar_t* nl = wcspbrk(p, L"\r\n");
+        int segLen = nl ? (int)(nl - p) : (int)wcslen(p);
+        int sepLen = nl ? ((nl[0] == L'\r' && nl[1] == L'\n') ? 2 : 1) : 0;
+        int need;
+        wchar_t seg[MSGLINE_CHARS], zh[MSGLINE_CHARS];
+        const wchar_t* text;
+
+        if (segLen >= MSGLINE_CHARS)
+            return NULL;                // 行太长：结构不认识，整串放弃
+
+        memcpy(seg, p, (size_t)segLen * sizeof(wchar_t));
+        seg[segLen] = 0;
+
+        text = seg;
+        if (segLen > 0 && TryTranslate(seg, zh, MSGLINE_CHARS))
+        {
+            text = zh;
+            any = TRUE;
+        }
+
+        need = (int)wcslen(text) + sepLen;
+        if (out + need >= MSGBOX_BUF)
+            return NULL;
+
+        memcpy(dst + out, text, wcslen(text) * sizeof(wchar_t));
+        out += (int)wcslen(text);
+        if (sepLen)
+        {
+            memcpy(dst + out, nl, (size_t)sepLen * sizeof(wchar_t));
+            out += sepLen;
+        }
+
+        if (!nl)
+            break;
+        p = nl + sepLen;
+    }
+
+    if (!any)
         return NULL;
-    Logf(L"[HIT ] MessageBox %s \"%s\" -> \"%s\"", what, src, dst);
+
+    dst[out] = 0;
+    Logf(L"[HIT ] MessageBox %s (multi-line) -> \"%s\"", what, dst);
     return dst;
 }
 
@@ -2754,15 +2847,102 @@ typedef HRESULT (WINAPI *TaskDialog_t)(HWND, HINSTANCE, LPCWSTR, LPCWSTR, LPCWST
 static void* g_realTaskDialogIndirect = NULL;
 static void* g_realTaskDialog         = NULL;
 
-static HRESULT WINAPI HookTaskDialogIndirect(const TASKDIALOGCONFIG* cfg, int* btn, int* radio, BOOL* verify)
+// ---- TaskDialog 的按钮 / 单选文字 ----
+// TASKDIALOG_BUTTON 的 pszButtonText 常常写成「主标题 + 换行 + 说明」两行
+// （SI 的更新检查页就是 L"Stable\n - Recommended"、L"Canary\n - Preview"），
+// 整串精确匹配基本命不中。这里按换行拆段、逐段查词典，前导空白与「- 」
+// 项目符号原样保留，只换掉真正的内容部分。
+#define TD_MAX_ITEMS   16
+#define TD_ITEM_CHARS  256
+
+static const wchar_t* TrTdItem(const wchar_t* src, wchar_t* dst, const wchar_t* what)
+{
+    const wchar_t* p;
+    int out = 0;
+    BOOL any = FALSE;
+
+    if (!src || !*src)
+        return NULL;
+
+    if (TryTranslate(src, dst, TD_ITEM_CHARS))
+    {
+        Logf(L"[HIT ] TaskDialog %s \"%s\" -> \"%s\"", what, src, dst);
+        return dst;
+    }
+
+    if (!wcschr(src, L'\n'))
+        return NULL;                        // 单段且未命中：交回原文，不做兜底拼装
+
+    for (p = src; ; )
+    {
+        const wchar_t* nl = wcschr(p, L'\n');
+        int segLen = nl ? (int)(nl - p) : (int)wcslen(p);
+        int lead = 0, dash = 0, core, need;
+        wchar_t coreStr[TD_ITEM_CHARS], zh[TD_ITEM_CHARS];
+        const wchar_t* text;
+
+        while (lead < segLen && (p[lead] == L' ' || p[lead] == L'\t'))
+            lead++;
+        if (lead + 1 < segLen && p[lead] == L'-' && p[lead + 1] == L' ')
+            dash = 2;
+
+        core = segLen - lead - dash;
+        if (core <= 0 || core >= TD_ITEM_CHARS)
+            return NULL;                    // 结构不认识就整串放弃，宁可留英文
+        memcpy(coreStr, p + lead + dash, (size_t)core * sizeof(wchar_t));
+        coreStr[core] = 0;
+
+        text = coreStr;
+        if (TryTranslate(coreStr, zh, TD_ITEM_CHARS))
+        {
+            text = zh;
+            any = TRUE;
+        }
+
+        need = lead + dash + (int)wcslen(text) + (nl ? 1 : 0);
+        if (out + need >= TD_ITEM_CHARS)
+            return NULL;
+
+        memcpy(dst + out, p, (size_t)lead * sizeof(wchar_t));
+        out += lead;
+        if (dash)
+        {
+            dst[out++] = L'-';
+            dst[out++] = L' ';
+        }
+        memcpy(dst + out, text, wcslen(text) * sizeof(wchar_t));
+        out += (int)wcslen(text);
+        if (nl)
+            dst[out++] = L'\n';
+
+        if (!nl)
+            break;
+        p = nl + 1;
+    }
+
+    if (!any)
+        return NULL;
+
+    dst[out] = 0;
+    Logf(L"[HIT ] TaskDialog %s \"%s\" -> \"%s\"", what, src, dst);
+    return dst;
+}
+
+// 把一份 TASKDIALOGCONFIG 的可见文字换成译文，结果写进 TLS 缓冲的 out。
+// 只在同一线程、同一时刻用一次（TaskDialog 创建与翻页都是 UI 线程同步调用）。
+static const TASKDIALOGCONFIG* TranslateTdConfig(const TASKDIALOGCONFIG* cfg)
 {
     static __declspec(thread) TASKDIALOGCONFIG cfgCopy;
     static __declspec(thread) wchar_t b1[MSGBOX_BUF], b2[MSGBOX_BUF], b3[MSGBOX_BUF];
     static __declspec(thread) wchar_t b4[MSGBOX_BUF], b5[MSGBOX_BUF];
+    static __declspec(thread) TASKDIALOG_BUTTON btnCopy[TD_MAX_ITEMS], radioCopy[TD_MAX_ITEMS];
+    static __declspec(thread) wchar_t btnText[TD_MAX_ITEMS][TD_ITEM_CHARS];
+    static __declspec(thread) wchar_t radioText[TD_MAX_ITEMS][TD_ITEM_CHARS];
     const wchar_t* r;
+    UINT i;
 
     if (!cfg)
-        return ((TaskDialogIndirect_t)g_realTaskDialogIndirect)(cfg, btn, radio, verify);
+        return cfg;
 
     cfgCopy = *cfg;
 
@@ -2777,7 +2957,36 @@ static HRESULT WINAPI HookTaskDialogIndirect(const TASKDIALOGCONFIG* cfg, int* b
     if ((r = TrMsgField(cfg->pszFooter, b5, L"footer")) != NULL)
         cfgCopy.pszFooter = r;
 
-    return ((TaskDialogIndirect_t)g_realTaskDialogIndirect)(&cfgCopy, btn, radio, verify);
+    // 自定义按钮（如更新检查页的 "Check"）
+    if (cfg->pButtons && cfg->cButtons > 0 && cfg->cButtons <= TD_MAX_ITEMS)
+    {
+        for (i = 0; i < cfg->cButtons; i++)
+        {
+            btnCopy[i] = cfg->pButtons[i];
+            if ((r = TrTdItem(cfg->pButtons[i].pszButtonText, btnText[i], L"button")) != NULL)
+                btnCopy[i].pszButtonText = r;
+        }
+        cfgCopy.pButtons = btnCopy;
+    }
+
+    // 单选按钮（如 "Stable\n - Recommended" / "Canary\n - Preview"）
+    if (cfg->pRadioButtons && cfg->cRadioButtons > 0 && cfg->cRadioButtons <= TD_MAX_ITEMS)
+    {
+        for (i = 0; i < cfg->cRadioButtons; i++)
+        {
+            radioCopy[i] = cfg->pRadioButtons[i];
+            if ((r = TrTdItem(cfg->pRadioButtons[i].pszButtonText, radioText[i], L"radio")) != NULL)
+                radioCopy[i].pszButtonText = r;
+        }
+        cfgCopy.pRadioButtons = radioCopy;
+    }
+
+    return &cfgCopy;
+}
+
+static HRESULT WINAPI HookTaskDialogIndirect(const TASKDIALOGCONFIG* cfg, int* btn, int* radio, BOOL* verify)
+{
+    return ((TaskDialogIndirect_t)g_realTaskDialogIndirect)(TranslateTdConfig(cfg), btn, radio, verify);
 }
 
 static HRESULT WINAPI HookTaskDialog(HWND hwnd, HINSTANCE inst, LPCWSTR title, LPCWSTR main, LPCWSTR content,
@@ -2792,6 +3001,103 @@ static HRESULT WINAPI HookTaskDialog(HWND hwnd, HINSTANCE inst, LPCWSTR title, L
     if ((r = TrMsgField(content, b3, L"content")) != NULL) c = r;
 
     return ((TaskDialog_t)g_realTaskDialog)(hwnd, inst, t, m, c, buttons, icon, result);
+}
+
+// ---- 悬停信息板（标准 tooltips_class32）----
+// 文本不是通过 SetWindowText 传进去的，而是控件向宿主发 TTN_GETDISPINFO，宿主在
+// 回调里把 lpszText 指向自己的字符串，控件随后**按这份文本重新测量并绘制**。
+// 所以不能像绘制钩子那样在 DrawText 里换字（换完行距是按英文算的，会叠行），
+// 必须在宿主回填之后、控件测量之前把指针换成译文 —— 这里就是同步 SendMessage
+// 返回的那一刻，控件还没拿到文本。
+#define TIP_POOL_COUNT 4
+static wchar_t g_tipPool[TIP_POOL_COUNT][MSGBOX_BUF];
+static LONG    g_tipPoolIndex = 0;
+
+// 逐行翻译多行串：每行剥掉前导空白后单独查词，缩进与换行符按原样拼回。
+// 单行不在这里处理（调用方先试整串）；一行都没命中就返回 NULL，保留原文。
+static const wchar_t* TrMultiLineText(const wchar_t* src, wchar_t* dst, int dstCap, const wchar_t* what)
+{
+    const wchar_t* p;
+    int out = 0;
+    BOOL any = FALSE;
+
+    if (!src || !*src || !wcspbrk(src, L"\r\n"))
+        return NULL;
+
+    for (p = src; ; )
+    {
+        const wchar_t* nl = wcspbrk(p, L"\r\n");
+        int segLen = nl ? (int)(nl - p) : (int)wcslen(p);
+        int sepLen = nl ? ((nl[0] == L'\r' && nl[1] == L'\n') ? 2 : 1) : 0;
+        int lead = 0, core, need;
+        wchar_t seg[MSGLINE_CHARS], zh[MSGLINE_CHARS];
+        const wchar_t* text;
+
+        while (lead < segLen && (p[lead] == L' ' || p[lead] == L'\t'))
+            lead++;
+
+        core = segLen - lead;
+        if (core >= MSGLINE_CHARS)
+            return NULL;
+
+        memcpy(seg, p + lead, (size_t)core * sizeof(wchar_t));
+        seg[core] = 0;
+
+        text = seg;
+        if (core > 0 && TryTranslate(seg, zh, MSGLINE_CHARS))
+        {
+            text = zh;
+            any = TRUE;
+        }
+
+        need = lead + (int)wcslen(text) + sepLen;
+        if (out + need >= dstCap)
+            return NULL;
+
+        memcpy(dst + out, p, (size_t)lead * sizeof(wchar_t));   // 缩进原样保留
+        out += lead;
+        memcpy(dst + out, text, wcslen(text) * sizeof(wchar_t));
+        out += (int)wcslen(text);
+        if (sepLen)
+        {
+            memcpy(dst + out, nl, (size_t)sepLen * sizeof(wchar_t));
+            out += sepLen;
+        }
+
+        if (!nl)
+            break;
+        p = nl + sepLen;
+    }
+
+    if (!any)
+        return NULL;
+
+    dst[out] = 0;
+    Logf(L"[HIT ] %s (multi-line) -> \"%s\"", what, dst);
+    return dst;
+}
+
+static const wchar_t* TrTipText(NMTTDISPINFO* info)
+{
+    const wchar_t* src = info ? info->lpszText : NULL;
+    wchar_t* dst;
+    LONG slot;
+
+    if (!src || !*src)
+        return NULL;
+
+    slot = InterlockedIncrement(&g_tipPoolIndex);
+    if (slot < 0)
+        slot = -slot;
+    dst = g_tipPool[slot % TIP_POOL_COUNT];
+
+    if (TryTranslate(src, dst, MSGBOX_BUF))
+    {
+        Logf(L"[HIT ] tooltip \"%s\" -> \"%s\"", src, dst);
+        return dst;
+    }
+
+    return TrMultiLineText(src, dst, MSGBOX_BUF, L"tooltip");
 }
 
 static LRESULT WINAPI HookSendMessageW(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -2811,6 +3117,39 @@ static LRESULT WINAPI HookSendMessageW(HWND hwnd, UINT msg, WPARAM wParam, LPARA
 
     if (!real)
         return 0;
+
+    // TaskDialog 的翻页不走 TaskDialogIndirect。SI 用 PhTaskDialogNavigatePage →
+    // SendMessage(TDM_NAVIGATE_PAGE)，携带一份新的 TASKDIALOGCONFIG；更新检查页
+    // 那两条单选（"Stable\n - Recommended"/"Canary\n - Preview"）与 "Check" 按钮
+    // 就是从这条路进来的，只钩 TaskDialogIndirect 会整页漏掉。
+    if (msg == TDM_NAVIGATE_PAGE && lParam)
+    {
+        wchar_t cls[64];
+        if (GetClassNameW(hwnd, cls, RTL_NUMBER_OF(cls)) > 0 && wcscmp(cls, L"#32770") == 0)
+        {
+            const TASKDIALOGCONFIG* zh = TranslateTdConfig((const TASKDIALOGCONFIG*)lParam);
+            if (zh)
+                lParam = (LPARAM)zh;
+        }
+    }
+
+    // 悬停信息板：等宿主在 TTN_GETDISPINFO 里回填完文本，再把指针换成译文，
+    // 控件拿到的就是中文串，自己重新排版，不会叠行。
+    if (msg == WM_NOTIFY && lParam)
+    {
+        NMHDR* hdr = (NMHDR*)lParam;
+
+        if (hdr->code == TTN_GETDISPINFO)
+        {
+            LRESULT r = real(hwnd, msg, wParam, lParam);
+            NMTTDISPINFO* info = (NMTTDISPINFO*)lParam;
+            const wchar_t* zh = TrTipText(info);
+
+            if (zh)
+                info->lpszText = (LPWSTR)zh;
+            return r;
+        }
+    }
 
     switch (msg)
     {
@@ -2870,6 +3209,25 @@ static LRESULT WINAPI HookSendMessageW(HWND hwnd, UINT msg, WPARAM wParam, LPARA
 
 // ---------------------------------------------------------------- Hook: 自绘文本
 
+// 标准 tooltip 控件（tooltips_class32）拿到文本后自己算窗口尺寸与行数，
+// 绘制时行距只跟字体有关、跟文本长度无关；中文比原文短，只会右侧留白。
+// 所以这一类窗口可以安全地逐行替换，不像 SI 自绘的那种多行气泡（行距按英文
+// 宽度算，换了就叠行）。
+static BOOL IsTooltipPaint(void)
+{
+    wchar_t cls[64];
+    HWND hwnd;
+
+    if (g_paintDepth <= 0)
+        return FALSE;
+
+    hwnd = g_paintStack[g_paintDepth - 1];
+    if (!hwnd)
+        return FALSE;
+
+    return GetClassNameW(hwnd, cls, RTL_NUMBER_OF(cls)) > 0 && _wcsicmp(cls, L"tooltips_class32") == 0;
+}
+
 static int WINAPI HookDrawTextW(HDC hdc, LPCWSTR text, int count, LPRECT rect, UINT format)
 {
     wchar_t oldText[MAX_TEXTLEN];
@@ -2899,6 +3257,11 @@ static int WINAPI HookDrawTextW(HDC hdc, LPCWSTR text, int count, LPRECT rect, U
         use = translated;
         useCount = (int)wcslen(translated);
         Logf(L"[HIT ] DrawTextW \"%s\" -> \"%s\" (count=%d->%d)", oldText, use, count, useCount);
+    }
+    else if (IsTooltipPaint() && (nt = TrMultiLineText(text, translated, MAX_TEXTLEN, L"DrawTextW tooltip")) != NULL)
+    {
+        use = translated;
+        useCount = (int)wcslen(translated);
     }
     else
     {
@@ -3373,6 +3736,242 @@ static LRESULT CALLBACK CallWndProc(int code, WPARAM wParam, LPARAM lParam)
     return CallNextHookEx(g_callWndHook, code, wParam, lParam);
 }
 
+// ---------------------------------------------------------------- WH_CBT 兜底（对话框标题）
+
+static HHOOK g_cbtHook = NULL;
+static HMODULE g_selfModule = NULL;   // 全局 WH_CBT 钩子要用自己的模块句柄
+
+// 对话框标题换掉后，指针要在窗口存活期间一直有效 —— 用轮转池，不还给栈。
+#define DLG_POOL_COUNT 8
+static wchar_t g_dlgPool[DLG_POOL_COUNT][MAX_TEXTLEN];
+static LONG    g_dlgPoolIndex = 0;
+
+static wchar_t* DlgPoolTake(void)
+{
+    LONG slot = InterlockedIncrement(&g_dlgPoolIndex);
+    if (slot < 0)
+        slot = -slot;
+    return g_dlgPool[slot % DLG_POOL_COUNT];
+}
+
+// 普通对话框的标题来自 .rc 的 CAPTION "Choose Columns" 这类资源串：建窗口时由系统
+// 直接写进窗口，既不走 SendMessageW(WM_SETTEXT)，也不产生可被 CALLWNDPROC 抓到的
+// 消息 —— 前面那些入口一律碰不到它。只能趁 CBT 的「窗口即将激活」事件，
+// 在它显示出来之前把标题换成译文。对话框架都是 #32770；TaskDialog 也是这个类，
+// 但它标题已经被 TranslateTdConfig 换成中文，这里就查不中、自动跳过。
+static BOOL CbtIsDialogClass(LPCWSTR cls)
+{
+    wchar_t name[64];
+
+    if (!cls)
+        return FALSE;
+
+    if (IS_INTRESOURCE(cls))
+    {
+        if (GetAtomNameW((ATOM)(UINT_PTR)cls, name, RTL_NUMBER_OF(name)) == 0)
+            return FALSE;
+        return _wcsicmp(name, L"#32770") == 0;
+    }
+
+    return _wcsicmp(cls, L"#32770") == 0;
+}
+
+static LRESULT CALLBACK CbtProc(int code, WPARAM wParam, LPARAM lParam)
+{
+    // HCBT_CREATEWND：窗口还没建出来，CREATESTRUCT 里的 lpszName 就是标题。
+    // 这里换掉最省事 —— 不必等窗口激活，也不存在「设完又被改回」的竞争。
+    if (code == HCBT_CREATEWND && g_doTranslate && lParam)
+    {
+        CBT_CREATEWND* cc = (CBT_CREATEWND*)lParam;
+        CREATESTRUCTW* cs = cc ? cc->lpcs : NULL;
+
+        if (cs && CbtIsDialogClass(cs->lpszClass))
+        {
+            Logf(L"[cbt] CREATEWND #32770 name=\"%s\"",
+                 (cs->lpszName && !IS_INTRESOURCE(cs->lpszName)) ? (const wchar_t*)cs->lpszName : L"<res>");
+
+            if (cs->lpszName && !IS_INTRESOURCE(cs->lpszName) && *((const wchar_t*)cs->lpszName))
+            {
+                wchar_t translated[MAX_TEXTLEN];
+                const wchar_t* nt = TryTranslate((const wchar_t*)cs->lpszName, translated, MAX_TEXTLEN);
+
+                if (nt)
+                {
+                    wchar_t* keep = DlgPoolTake();
+
+                    Logf(L"[HIT ] dialog title \"%s\" -> \"%s\"", (const wchar_t*)cs->lpszName, nt);
+                    wcsncpy_s(keep, MAX_TEXTLEN, translated, _TRUNCATE);
+                    cs->lpszName = keep;
+                }
+            }
+        }
+    }
+    else if (code == HCBT_ACTIVATE && g_doTranslate && wParam)
+    {
+        HWND hwnd = (HWND)wParam;
+        wchar_t cls[64];
+        wchar_t title[MAX_TEXTLEN];
+        wchar_t translated[MAX_TEXTLEN];
+        const wchar_t* nt;
+
+        if (GetClassNameW(hwnd, cls, RTL_NUMBER_OF(cls)) > 0 && _wcsicmp(cls, L"#32770") == 0 &&
+            GetWindowTextW(hwnd, title, MAX_TEXTLEN) > 0 && *title &&
+            (nt = TryTranslate(title, translated, MAX_TEXTLEN)) != NULL)
+        {
+            RealGuard zh_guard;
+            SetWindowTextW(hwnd, translated);
+            Logf(L"[HIT ] dialog title (activate) \"%s\" -> \"%s\"", title, translated);
+        }
+    }
+
+    return CallNextHookEx(g_cbtHook, code, wParam, lParam);
+}
+
+// ---------------------------------------------------------------- 对话框标题
+//
+// 普通对话框的标题来自 .rc 的 CAPTION "Choose Columns"：建窗口时由 DialogBox* /
+// CreateDialog* 直接从「对话框模板」里读出来写进窗口，既不经过 SendMessageW(WM_SETTEXT)，
+// 也不产生能被 CALLWNDPROC 抓到的消息，线程级 CBT 钩子也覆盖不到 SI 的 UI 线程
+// （实测 WH_CBT 装了但一次都没回调）。
+//
+// 所以只能从模板下手：PhDialogBox 走 DialogBoxIndirectParamW（phlib\guisup.c:2854），
+// 模板指针在参数里，趁调用真实函数之前把标题字段临时改成译文，调用完再原样写回。
+// 只做「译文不比原文长」的替换 —— 模板里给标题留的空间就是原串长度，写超了会踩坏
+// 后面的控件描述。
+
+typedef INT_PTR (WINAPI *DialogBoxIndirectParamW_t)(HINSTANCE, LPCDLGTEMPLATEW, HWND, DLGPROC, LPARAM);
+typedef HWND (WINAPI *CreateDialogIndirectParamW_t)(HINSTANCE, LPCDLGTEMPLATEW, HWND, DLGPROC, LPARAM);
+
+static void* g_realDialogBoxIndirectParamW = NULL;
+static void* g_realCreateDialogIndirectParamW = NULL;
+
+// 跳过模板里的 menu / windowClass 两段可变字段（0x0000 = 无，0xFFFF = 序号，否则是串）
+static PBYTE DlgSkipSz(PBYTE p)
+{
+    if (*(WORD*)p == 0x0000)
+        return p + 2;
+    if (*(WORD*)p == 0xFFFF)
+        return p + 4;
+    while (*p)
+        p += 2;
+    return p + 2;
+}
+
+static wchar_t* DlgTemplateTitle(LPDLGTEMPLATE tmpl)
+{
+    PBYTE p = (PBYTE)tmpl;
+
+    if (*(WORD*)p == 1 && *((WORD*)(p + 2)) == 0xFFFF)      // DLGTEMPLATEEX
+        p += 2 + 2 + 4 + 4 + 4 + 2 + 2 + 2 + 2 + 2;
+    else                                                    // 旧式 DLGTEMPLATE
+        p += 4 + 4 + 2 + 2 + 2 + 2 + 2;
+
+    p = DlgSkipSz(p);                                       // menu
+    p = DlgSkipSz(p);                                       // windowClass
+
+    if (*(WORD*)p == 0x0000)
+        return NULL;
+
+    return (wchar_t*)p;
+}
+
+// 把模板标题换成临时译文。成功返回 TRUE，调用方必须在真实调用之后 Restore。
+static BOOL DlgSwapTitle(LPDLGTEMPLATE tmpl, wchar_t* saved, int savedCch, PBYTE* page, SIZE_T* pageSize, DWORD* oldProt)
+{
+    wchar_t* title = DlgTemplateTitle(tmpl);
+    wchar_t zh[MAX_TEXTLEN];
+    size_t len, need;
+    UINT_PTR addr;
+
+    if (!title || !*title)
+        return FALSE;
+
+    len = wcslen(title);
+    if (len >= (size_t)savedCch)
+        return FALSE;
+
+    if (!TryTranslate(title, zh, MAX_TEXTLEN))
+        return FALSE;
+
+    // 空间只够原串：译文更长就放弃，宁可不译也不能写坏模板
+    if (wcslen(zh) > len)
+        return FALSE;
+
+    wcsncpy_s(saved, (size_t)savedCch, title, _TRUNCATE);
+
+    addr = (UINT_PTR)title;
+    *page = (PBYTE)(addr & ~(UINT_PTR)0xFFF);
+    need = (addr + (len + 1) * sizeof(wchar_t)) - (UINT_PTR)*page;
+    *pageSize = (need + 0xFFF) & ~(SIZE_T)0xFFF;
+
+    if (!VirtualProtect(*page, *pageSize, PAGE_READWRITE, oldProt))
+        return FALSE;
+
+    // 关键：标题后面紧跟控件数组，模板解析靠「标题的结束符」定位下一个控件。
+    // 写成短串 + 先放 '\0' 会让解析器提前停下、控件数组整体错位 → 对话框建不出来。
+    // 所以必须保持总字节长度不变：译文之后补空格，结束符仍留在原位置。
+    {
+        size_t i;
+
+        memcpy(title, zh, wcslen(zh) * sizeof(wchar_t));
+        for (i = wcslen(zh); i < len; i++)
+            title[i] = L' ';
+        title[len] = L'\0';
+    }
+
+    Logf(L"[HIT ] dialog template title \"%s\" -> \"%s\"", saved, zh);
+    return TRUE;
+}
+
+static INT_PTR WINAPI HookDialogBoxIndirectParamW(HINSTANCE inst, LPCDLGTEMPLATEW tmpl, HWND parent, DLGPROC proc, LPARAM param)
+{
+    wchar_t saved[512];
+    wchar_t* title;
+    PBYTE page = NULL;
+    SIZE_T pageSize = 0;
+    DWORD oldProt = 0;
+    INT_PTR r;
+
+    if (!g_realDialogBoxIndirectParamW)
+        return 0;
+
+    if (!g_doTranslate || !tmpl || !DlgSwapTitle((LPDLGTEMPLATE)tmpl, saved, 512, &page, &pageSize, &oldProt))
+        return ((DialogBoxIndirectParamW_t)g_realDialogBoxIndirectParamW)(inst, tmpl, parent, proc, param);
+
+    title = DlgTemplateTitle((LPDLGTEMPLATE)tmpl);
+    r = ((DialogBoxIndirectParamW_t)g_realDialogBoxIndirectParamW)(inst, tmpl, parent, proc, param);
+
+    if (title)
+    {
+        memcpy(title, saved, (wcslen(saved) + 1) * sizeof(wchar_t));
+        VirtualProtect(page, pageSize, oldProt, &oldProt);
+    }
+
+    return r;
+}
+
+static HWND WINAPI HookCreateDialogIndirectParamW(HINSTANCE inst, LPCDLGTEMPLATEW tmpl, HWND parent, DLGPROC proc, LPARAM param)
+{
+    HWND hwnd = ((CreateDialogIndirectParamW_t)g_realCreateDialogIndirectParamW)(inst, tmpl, parent, proc, param);
+
+    if (hwnd && g_doTranslate)
+    {
+        wchar_t title[MAX_TEXTLEN];
+        wchar_t translated[MAX_TEXTLEN];
+        const wchar_t* nt;
+
+        if (GetWindowTextW(hwnd, title, MAX_TEXTLEN) > 0 && *title &&
+            (nt = TryTranslate(title, translated, MAX_TEXTLEN)) != NULL)
+        {
+            RealGuard zh_guard;
+            SetWindowTextW(hwnd, translated);
+            Logf(L"[HIT ] dialog title \"%s\" -> \"%s\"", title, translated);
+        }
+    }
+
+    return hwnd;
+}
+
 // ---------------------------------------------------------------- IAT Hook
 
 static BOOL SameModuleName(const char* name, const char* want)
@@ -3624,6 +4223,10 @@ static void InstallHooks(void)
             { L"user32.dll", "MessageBoxExW",       (LPVOID)&HookMessageBoxExW,       &g_realMessageBoxExW,       TRUE },
             { L"user32.dll", "MessageBoxA",         (LPVOID)&HookMessageBoxA,         &g_realMessageBoxA,         TRUE },
             { L"user32.dll", "MessageBoxIndirectW", (LPVOID)&HookMessageBoxIndirectW, &g_realMessageBoxIndirectW, TRUE },
+            // 对话框标题：模板入口。PhDialogBox 走 DialogBoxIndirectParamW
+            // （phlib\guisup.c:2854），标题只有在这一步能被改。
+            { L"user32.dll", "DialogBoxIndirectParamW",   (LPVOID)&HookDialogBoxIndirectParamW,   &g_realDialogBoxIndirectParamW,   TRUE },
+            { L"user32.dll", "CreateDialogIndirectParamW", (LPVOID)&HookCreateDialogIndirectParamW, &g_realCreateDialogIndirectParamW, TRUE },
             // comctl32 的 TaskDialog 不在表里：钩子 DLL 注入时 comctl32 往往还没被
             // 加载（MH_CreateHookApi 会返回 MODULE_NOT_FOUND），必须等它出现再挂。
             // 见 EnableTaskDialogHooksThread。
@@ -3758,6 +4361,9 @@ static DWORD WINAPI EnableThread(LPVOID param)
 
     g_callWndHook = SetWindowsHookExW(WH_CALLWNDPROC, CallWndProc, NULL, GetCurrentThreadId());
     Logf(L"[hook] WH_CALLWNDPROC=%p (err=%lu)", (void*)g_callWndHook, g_callWndHook ? 0 : GetLastError());
+
+    g_cbtHook = SetWindowsHookExW(WH_CBT, CbtProc, g_selfModule, 0);
+    Logf(L"[hook] WH_CBT=%p (err=%lu)", (void*)g_cbtHook, g_cbtHook ? 0 : GetLastError());
 
     InterlockedExchange(&g_initDone, 1);
     return 0;
@@ -3917,6 +4523,12 @@ static void Teardown(void)
         g_callWndHook = NULL;
     }
 
+    if (g_cbtHook)
+    {
+        UnhookWindowsHookEx(g_cbtHook);
+        g_cbtHook = NULL;
+    }
+
     // 未命中收集：按最终计数整体重写并关闭。
     // 放在关日志之前 —— 这样万一刷新失败，日志里还留有记录。
     MissFlushAndClose();
@@ -3936,6 +4548,7 @@ BOOL WINAPI DllMain(HINSTANCE self, DWORD reason, LPVOID reserved)
     if (reason == DLL_PROCESS_ATTACH)
     {
         DisableThreadLibraryCalls(self);
+        g_selfModule = (HMODULE)self;
         InitializeCriticalSection(&g_cs);
 
         ReadEnv();

@@ -1854,3 +1854,96 @@ Registry handles	注册表句柄
 Resume	继续
 Stop	停止
 Warning	警告
+System Informer - Updater	System Informer - 更新程序
+Check	检查
+Stable	稳定版
+Canary	金丝雀版
+Recommended	推荐
+Preview	预览
+Check for updates	检查更新
+Connecting...	正在连接...
+New version of System Informer available	有新的 System Informer 版本可用
+Update installed.	更新已安装。
+Checking the preview channel...	正在检查预览渠道...
+Version %s (download %s)	版本 %s（下载 %s）
+Speed: %s/s	速度：%s/s
+Download	下载
+Install	安装
+Retry	重试
+<A HREF="changelog.txt">View the changelog</A>	<A HREF="changelog.txt">查看更新日志</A>
+The update has been downloaded and installed.	更新已下载并安装。
+Restart System Informer to apply the update.	重启 System Informer 以应用此更新。
+File:	文件：
+Services:	服务：
+Tasks:	任务：
+Drivers:	驱动程序：
+Disk read bytes	磁盘读取字节
+Disk write bytes	磁盘写入字节
+Disk total bytes	磁盘总字节
+Disk reads delta	磁盘读取增量
+Disk writes delta	磁盘写入增量
+Disk read bytes delta	磁盘读取字节增量
+Disk write bytes delta	磁盘写入字节增量
+Disk total bytes delta	磁盘总字节增量
+Disk read rate	磁盘读取速率
+Disk write rate	磁盘写入速率
+Disk total rate	磁盘总速率
+Network receive bytes	网络接收字节
+Network send bytes	网络发送字节
+Network total bytes	网络总字节
+Network receives delta	网络接收增量
+Network sends delta	网络发送增量
+Network receive bytes delta	网络接收字节增量
+Network send bytes delta	网络发送字节增量
+Network total bytes delta	网络总字节增量
+Network receive rate	网络接收速率
+Network send rate	网络发送速率
+Network total rate	网络总速率
+Hard faults	硬错误
+Hard faults delta	硬错误增量
+Peak threads	峰值线程
+GPU dedicated bytes (resident)	GPU 专用字节（驻留）
+GPU shared bytes (resident)	GPU 共享字节（驻留）
+GPU dedicated bytes (committed)	GPU 专用字节（已提交）
+GPU shared bytes (committed)	GPU 共享字节（已提交）
+NPU dedicated bytes (resident)	NPU 专用字节（驻留）
+NPU shared bytes (resident)	NPU 共享字节（驻留）
+NPU dedicated bytes (committed)	NPU 专用字节（已提交）
+NPU shared bytes (committed)	NPU 共享字节（已提交）
+Firewall allows	防火墙允许
+Firewall allows delta	防火墙允许增量
+Firewall blocks	防火墙阻止
+Firewall blocks delta	防火墙阻止增量
+Firewall status	防火墙状态
+Receives	接收次数
+Receives delta	接收次数增量
+Receive bytes	接收字节
+Receive bytes delta	接收字节增量
+Receive rate	接收速率
+Sends	发送次数
+Sends delta	发送次数增量
+Send bytes	发送字节
+Send bytes delta	发送字节增量
+Send rate	发送速率
+Total bytes delta	总字节增量
+Algorithm	算法
+Characteristics	特性
+Entropy	熵
+File path	文件路径
+Forwarded name	转发名称
+Ordinal	序号
+Ordinal name	序号名称
+Symbol name	符号名称
+Undecorated name	未修饰名称
+Hint	提示
+Info	信息
+From	来源
+To	目标
+LDR flags	加载器标志
+Slack space	松弛空间
+SPC program name	SPC 程序名
+SPC publisher/more-information URL	SPC 发布者/更多信息 URL
+PID (LXSS)	PID（LXSS）
+TID (LXSS)	TID（LXSS）
+CF Guard	CF 防护
+XF Guard	XF 防护

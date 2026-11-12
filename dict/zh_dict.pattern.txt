@@ -56,3 +56,41 @@ Ser&vice (*)	服务(*)
 * hours and * minutes	* 小时 * 分钟
 Last update check: * (* hours and * minutes ago)	上次检查更新：*（* 小时 * 分钟前）
 Next update check: * (* hours and * minutes)	下次检查更新：*（* 小时 * 分钟）
+
+# ---------------------------------------------------------------------------
+# 三、更新器 / 版本信息里带运行期数值的行（TaskDialog content 的多行串按行套）
+# ---------------------------------------------------------------------------
+Version: *	版本：*
+Download size: *	下载大小：*
+Downloaded: * of * (*)	已下载：* / *（*）
+Speed: *	速度：*
+
+# ---------------------------------------------------------------------------
+# 四、悬停信息板（tooltips_class32）里「标签: 运行期数据」的行
+# ---------------------------------------------------------------------------
+Signer: *	签名者：*
+Package name: *	包名：*
+Console application: *	控制台应用：*
+Console host: *	控制台宿主：*
+Image is probably packed (*)	映像可能已加壳（*）
+Low image coherency: *	低映像一致性：*
+
+# ---------------------------------------------------------------------------
+# 五、GPU 引擎节点列名：ExtendedTools 运行期拼出来的动态串
+#   源码 treeext.c:184  PhFormatString(L"GPU %lu node %lu (%s)", ...)
+#   适配器序号、节点序号、驱动给的引擎名都是运行期值，精确词典命中不了。
+#   引擎名（3D/Copy/Video Decode…）来自 WDDM 驱动，这里按常见类型给中文；
+#   认不出来的类型走最后一条兜底，编号与名称原样保留。
+#   顺序：具体→宽泛，兜底放最后。
+# ---------------------------------------------------------------------------
+GPU * node * (3D)	GPU * 节点 *（3D）
+GPU * node * (Copy)	GPU * 节点 *（复制）
+GPU * node * (Overlay)	GPU * 节点 *（叠加）
+GPU * node * (Video Decode)	GPU * 节点 *（视频解码）
+GPU * node * (Video Encode)	GPU * 节点 *（视频编码）
+GPU * node * (Video Processing)	GPU * 节点 *（视频处理）
+GPU * node * (Security_*)	GPU * 节点 *（安全 *）
+GPU * node * (Security)	GPU * 节点 *（安全）
+GPU * node * (OFA_*)	GPU * 节点 *（OFA *）
+GPU * node * (*)	GPU * 节点 *（*）
+GPU * node *	GPU * 节点 *
