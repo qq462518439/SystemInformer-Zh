@@ -3345,13 +3345,6 @@ static int WINAPI HookDrawTextW(HDC hdc, LPCWSTR text, int count, LPRECT rect, U
         use = translated;
         useCount = (int)wcslen(translated);
     }
-    else if (wcsstr(oldText, L"<a href") && (nt = TrMultiLineText(text, translated, MAX_TEXTLEN, L"DrawTextW SysLink")) != NULL)
-    {
-        // SysLink（「关于」页的致谢/组件清单）一次画一整串富文本，整串翻译永远
-        // 命中不了；按行拆开、纯文本行查词、带 <a href> 的行原样保留，链接结构不变。
-        use = translated;
-        useCount = (int)wcslen(translated);
-    }
     else
     {
         MissNote("DrawTextW", oldText, NULL, hdc, rect ? rect->left : -1);
@@ -3415,12 +3408,6 @@ static int WINAPI HookDrawTextExW(HDC hdc, LPWSTR text, int count, LPRECT rect,
         use = translated;
         useCount = -1;
         Logf(L"[HIT ] DrawTextExW \"%s\" -> \"%s\"", oldText, use);
-    }
-    else if (g_doTranslate && wcsstr(oldText, L"<a href") &&
-             (nt = TrMultiLineText(text, translated, MAX_TEXTLEN, L"DrawTextExW SysLink")) != NULL)
-    {
-        use = translated;
-        useCount = -1;
     }
     else if (g_doTranslate)
     {
