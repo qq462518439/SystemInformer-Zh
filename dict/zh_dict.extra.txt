@@ -1988,3 +1988,14 @@ Max. I/O process	I/O 最高进程
 Selected process WS	所选进程工作集
 Selected process private bytes	所选进程私有字节
 KSI status	KSI 状态
+# ── OnlineChecks 插件首次运行欢迎页（partner.c / IDD_PARTNER）
+File reputation analysis	文件信誉分析
+System Informer has partnered with Hybrid-Analysis to provide automatic reputation analysis for processes, loaded modules, and services.	System Informer 已与 Hybrid-Analysis 合作，为进程、已加载模块和服务提供自动信誉分析。
+What is shared with Hybrid-Analysis	与 Hybrid-Analysis 共享的内容
+•  SHA-256 hashes of scanned images, for reputation lookup	•  扫描映像的 SHA-256 哈希，用于信誉查询
+•  Files unknown to Hybrid-Analysis are uploaded for full analysis	•  Hybrid-Analysis 未知的文件会被上传以进行完整分析
+Results appear in the Hybrid-Analysis column. To show it, right-click any column header and select "Choose columns...".
+	
+结果显示在 Hybrid-Analysis 列中。若要显示该列，请右键单击任意列标题并选择“选择列...”。
+Configure	配置
+Keep enabled	保持启用
