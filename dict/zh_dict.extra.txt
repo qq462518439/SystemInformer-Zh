@@ -1950,3 +1950,24 @@ XF Guard	XF 防护
 Delegate to client	委托给客户端
 Reset to defaults	重置为默认值
 Reset all to defaults	全部重置为默认值
+System Informer 0.0.0.0 Release	System Informer 4.0.26241.138 Release
+Thanks to:	致谢：
+Donors - thank you for your support!	捐赠者 — 感谢您的支持！
+System Informer uses the following components:	System Informer 使用以下组件：
+MD5 code by Jouni Malinen	MD5 代码由 Jouni Malinen 提供
+SHA1 code by Filip Navara, based on code by Steve Reid	SHA1 代码由 Filip Navara 提供，基于 Steve Reid 的代码
+ - thank you for your additions!     Donors - thank you for your support!  System Informer uses the following components:     	 — 感谢您补充的内容！     捐赠者 — 感谢您的支持！  System Informer 使用以下组件：   
+    Donors - thank you for your support!  System Informer uses the following components:     	    捐赠者 — 感谢您的支持！  System Informer 使用以下组件：   
+ by Intel Corporation     	 由 Intel 公司提供     
+ by Michael Sweet     	 由 Michael Sweet 提供     
+ by Philip Hazel     	 由 Philip Hazel 提供     
+ by Michael Clark     MD5 code by Jouni Malinen     SHA1 code by Filip Navara, based on code by Steve Reid 	 由 Michael Clark 提供     MD5 代码由 Jouni Malinen 提供     SHA1 代码由 Filip Navara 提供，基于 Steve Reid 的代码 
+    MD5 code by Jouni Malinen     SHA1 code by Filip Navara, based on code by Steve Reid 	    MD5 代码由 Jouni Malinen 提供     SHA1 代码由 Filip Navara 提供，基于 Steve Reid 的代码 
+by Intel Corporation	由 Intel 公司提供
+by Michael Sweet	由 Michael Sweet 提供
+by Philip Hazel	由 Philip Hazel 提供
+by Michael Clark	由 Michael Clark 提供
+MD5 code by Jouni Malinen	MD5 代码由 Jouni Malinen 提供
+SHA1 code by Filip Navara, based on code by Steve Reid	SHA1 代码由 Filip Navara 提供，基于 Steve Reid 的代码
+- thank you for your additions!	— 感谢您补充的内容！
+Donors - thank you for your support!	捐赠者 — 感谢您的支持！

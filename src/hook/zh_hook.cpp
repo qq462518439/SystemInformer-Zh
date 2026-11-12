@@ -2502,6 +2502,43 @@ static const wchar_t* TryTranslate(const wchar_t* s, wchar_t* out, int outCap)
                 }
             }
         }
+
+        // 5) 去掉尾随空白后重试。SysLink 的多行富文本每段常带补齐空格
+        //    （"Thanks to:      "），词典里不该为这种排版补位单独建键。
+        if (!r)
+        {
+            int tail = len;
+
+            while (tail > 0 && (out[tail - 1] == L' ' || out[tail - 1] == L'\t' ||
+                                out[tail - 1] == L'\r' || out[tail - 1] == L'\n'))
+                tail--;
+
+            if (tail > 0 && tail < len)
+            {
+                wchar_t t3[MAX_TEXTLEN], z3[MAX_TEXTLEN];
+
+                // LookupDict 用 _wcsicmp 比整串，键必须自带结尾，先把尾部空白截掉。
+                wcsncpy_s(t3, MAX_TEXTLEN, out, (size_t)tail);
+                t3[tail] = L'\0';
+
+                r = LookupDict(t3, tail, z3, MAX_TEXTLEN);
+
+                if (!r && g_patCount > 0)
+                    r = MatchPatterns(t3, z3, MAX_TEXTLEN);
+
+                if (r)
+                {
+                    wchar_t joined[MAX_TEXTLEN];
+                    int zhLen;
+
+                    wcsncpy_s(joined, MAX_TEXTLEN, z3, _TRUNCATE);
+                    zhLen = (int)wcslen(joined);
+                    if (zhLen > 0 && zhLen < MAX_TEXTLEN - 1)
+                        wcsncpy_s(joined + zhLen, MAX_TEXTLEN - zhLen, out + tail, _TRUNCATE);
+                    wcsncpy_s(out, outCap, joined, _TRUNCATE);
+                }
+            }
+        }
     }
 
     (void)h;
@@ -3123,8 +3160,7 @@ static const wchar_t* TrMultiLineText(const wchar_t* src, wchar_t* dst, int dstC
     return dst;
 }
 
-static const wchar_t* TrTipText(NMTTDISPINFO* info)
-{
+static const wchar_t* TrTipText(NMTTDISPINFO* info){
     const wchar_t* src = info ? info->lpszText : NULL;
     wchar_t* dst;
     LONG slot;
@@ -3309,6 +3345,13 @@ static int WINAPI HookDrawTextW(HDC hdc, LPCWSTR text, int count, LPRECT rect, U
         use = translated;
         useCount = (int)wcslen(translated);
     }
+    else if (wcsstr(oldText, L"<a href") && (nt = TrMultiLineText(text, translated, MAX_TEXTLEN, L"DrawTextW SysLink")) != NULL)
+    {
+        // SysLink（「关于」页的致谢/组件清单）一次画一整串富文本，整串翻译永远
+        // 命中不了；按行拆开、纯文本行查词、带 <a href> 的行原样保留，链接结构不变。
+        use = translated;
+        useCount = (int)wcslen(translated);
+    }
     else
     {
         MissNote("DrawTextW", oldText, NULL, hdc, rect ? rect->left : -1);
@@ -3372,6 +3415,12 @@ static int WINAPI HookDrawTextExW(HDC hdc, LPWSTR text, int count, LPRECT rect,
         use = translated;
         useCount = -1;
         Logf(L"[HIT ] DrawTextExW \"%s\" -> \"%s\"", oldText, use);
+    }
+    else if (g_doTranslate && wcsstr(oldText, L"<a href") &&
+             (nt = TrMultiLineText(text, translated, MAX_TEXTLEN, L"DrawTextExW SysLink")) != NULL)
+    {
+        use = translated;
+        useCount = -1;
     }
     else if (g_doTranslate)
     {
