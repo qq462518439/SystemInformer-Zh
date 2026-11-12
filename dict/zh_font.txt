@@ -78,14 +78,25 @@
 #       页签一起变大，属于改版式，不是改渲染，按需再开。
 # ===========================================================================
 
-# ── 与 3.2 版对比结论（2026-11-12，实证）─────────────────────────────
-# 环境：系统 AppliedDPI=216（225% 缩放），物理 3840×2160，逻辑 1707×960。
-# 3.2 版（D:\Program Files\SystemInfomer-CN，官方 lang\zh-CN.json）状态栏：
-#   8pt@216DPI = 24px，字体 Microsoft Sans Serif + GDI 字体链接回落微软雅黑 → 笔画粗实饱满。
-# 旧策略（整条替换 Microsoft Sans Serif|8 → Microsoft YaHei UI|9）反而更细更虚：
-#   1) Microsoft YaHei UI 笔画比微软雅黑常规细一档；
-#   2) ClearType 细笔画在深色背景上彩色 fringe 更明显，观感"毛刺"。
-# 实测：停用替换、保留原名后，状态栏/菜单/列表字重立刻与 3.2 一致，
-#   字号不用放大、版式零变化、无需重启系统。
-# 结论：状态栏"锯齿感/发虚"的根因不是字号太小，而是字体名被替换成 YaHei UI。
-# 证据图：%TEMP%\cmp_3way.png（3.2 / 4.0 旧 YaHei UI / 4.0 新原名 三段同尺度对比）
+# ── 状态栏小字「锯齿 / 发虚」的真正原因（2026-11-12，读源码 + 运行期实测）──────
+# 纠正上一版结论：把原因归到「字体名替换成 Microsoft YaHei UI」是错的。
+# 停用替换后做逐像素差分（v40_native vs v40_nofont 状态栏区 35000 像素），
+# 只有 242 个像素不同，且全部落在百分比数字上 —— 字形一个像素都没变。
+# 真正原因在 SystemInformer\delayhook.c:771：
+#     //SelectFont(bufferDc, GetWindowFont(WindowHandle));
+# 这句被注释掉了。SI 自绘状态栏时缓冲 DC 上没选任何字体，DrawText 只能用 DC 默认的
+# System 位图字体，中文靠 GDI 字体链接回落 —— 在 225% 缩放下被渲染成约 8pt 小字，
+# 笔画细、边缘脏，也就是用户说的「比其它区域锯齿感重」。
+# 运行期探针证实：4.0 与 3.2 的 msctls_statusbar32 窗口 DC 字体都是 face="System" lfH=16，
+# 且给状态栏发 WM_SETFONT 完全无效（自绘不读控件字体）。所以换字体名 / 改 FontQuality /
+# 提字号三条路都不可能有效。
+# 系统显示：AppliedDPI=216（225%），物理 3840×2160，逻辑 1707×960。
+# 修复（hook 层，不改 SI 源码）：HookDrawTextW / HookDrawTextExW 增加 StatusFontGet：
+#   判据 = DC 当前字体解析名 == "System" 且 LOGPIXELSY > 96；
+#   命中就临时 SelectObject 一个 -(9*DPI/72) 的 Microsoft YaHei UI（DEFAULT_QUALITY），画完换回。
+# 实测（同窗口 800×450 DIP、同抓图方式、同裁切区、逐像素）：
+#   关补丁 ZHHK_STATUSFONT=0：状态栏字面约 14px，细、发虚；
+#   开补丁：字面约 26px，粗实清晰；日志 [statusfont] dcDpi=216 h=-27 face="System"。
+# 参考 3.2 版：DPI-unaware，整个窗口被系统位图放大 2.25 倍，字面约 27px，糊但饱满；
+# 4.0 修复后字号相当且更清晰。
+# 证据图：%TEMP%\ab_status_font.png（关/开 同尺度）、%TEMP%\cmp_status_fix.png（+3.2 参考）

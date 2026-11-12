@@ -3310,6 +3310,66 @@ static BOOL IsTooltipPaint(void)
     return GetClassNameW(hwnd, cls, RTL_NUMBER_OF(cls)) > 0 && _wcsicmp(cls, L"tooltips_class32") == 0;
 }
 
+// ── 状态栏字号补丁 ────────────────────────────────────────────────────────
+// 真正的原因（读源码确认，不是猜）：SI 的 delayhook 自绘状态栏时，
+// delayhook.c:771 那句 `SelectFont(bufferDc, GetWindowFont(WindowHandle));` 是**被注释掉的**。
+// 于是缓冲 DC 上没选任何字体，DrawText 只能用 DC 默认的 System 位图字体，
+// 中文靠 GDI 字体链接回落 —— 在高 DPI 上被渲染成约 8pt 的小字，笔画细、边缘脏。
+// 这解释了为什么前几轮「换字体名 / 改 FontQuality / 提字号」全都无效：
+// 那些改的都是控件字体，而状态栏压根没用控件字体。
+// 判据：DC 当前字体解析名 == "System"，且 DC 的 LOGPIXELSY > 96（低 DPI 不动，
+// 保持原有行为）。命中就临时 SelectObject 一个按 DC DPI 缩放的微软雅黑，画完换回。
+// 开关：ZHHK_STATUSFONT=0 关闭。
+#define STATUS_FONT_PT 9
+static BOOL  g_doStatusFont = TRUE;
+static HFONT g_statusFont = NULL;
+static LONG  g_statusFontPx = 0;
+static volatile LONG g_statusFontLog = 0;
+
+static HFONT StatusFontGet(HDC hdc)
+{
+    LONG dpi, px;
+    HGDIOBJ obj;
+    LOGFONTW lf;
+
+    if (!g_doStatusFont || !hdc)
+        return NULL;
+
+    obj = GetCurrentObject(hdc, OBJ_FONT);
+    if (!obj || obj == (HGDIOBJ)HGDI_ERROR)
+        return NULL;
+    if (GetObjectW(obj, sizeof(LOGFONTW), &lf) != sizeof(LOGFONTW))
+        return NULL;
+    if (_wcsicmp(lf.lfFaceName, L"System") != 0)
+        return NULL;
+
+    dpi = GetDeviceCaps(hdc, LOGPIXELSY);
+    if (dpi <= 96)
+        return NULL;
+
+    px = -((LONG)STATUS_FONT_PT * dpi / 72);
+    if (g_statusFont && g_statusFontPx == px)
+        return g_statusFont;
+
+    if (g_statusFont)
+    {
+        DeleteObject(g_statusFont);
+        g_statusFont = NULL;
+    }
+
+    g_statusFont = CreateFontW(
+        px, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+        DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+        DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
+        L"Microsoft YaHei UI");
+    g_statusFontPx = px;
+
+    if (InterlockedIncrement(&g_statusFontLog) <= 3)
+        Logf(L"[statusfont] dcDpi=%d h=%d face=\"%s\"", (int)dpi, (int)px, lf.lfFaceName);
+
+    return g_statusFont;
+}
+
 static int WINAPI HookDrawTextW(HDC hdc, LPCWSTR text, int count, LPRECT rect, UINT format)
 {
     wchar_t oldText[MAX_TEXTLEN];
@@ -3351,8 +3411,22 @@ static int WINAPI HookDrawTextW(HDC hdc, LPCWSTR text, int count, LPRECT rect, U
     }
 
     {
-        RealGuard zh_guard;
-        return ((DrawTextW_t)g_realDrawTextW)(hdc, use, useCount, rect, format);
+        HGDIOBJ oldObj = NULL;
+        HFONT sf;
+        int r;
+
+        if ((sf = StatusFontGet(hdc)) != NULL)
+            oldObj = SelectObject(hdc, sf);
+
+        {
+            RealGuard zh_guard;
+            r = ((DrawTextW_t)g_realDrawTextW)(hdc, use, useCount, rect, format);
+        }
+
+        if (oldObj && oldObj != (HGDIOBJ)HGDI_ERROR)
+            SelectObject(hdc, oldObj);
+
+        return r;
     }
 }
 
@@ -3419,8 +3493,22 @@ static int WINAPI HookDrawTextExW(HDC hdc, LPWSTR text, int count, LPRECT rect,
     }
 
     {
-        RealGuard zh_guard;
-        return ((DrawTextExW_t)g_realDrawTextExW)(hdc, (LPWSTR)use, useCount, rect, format, params);
+        HGDIOBJ oldObj = NULL;
+        HFONT sf;
+        int r;
+
+        if ((sf = StatusFontGet(hdc)) != NULL)
+            oldObj = SelectObject(hdc, sf);
+
+        {
+            RealGuard zh_guard;
+            r = ((DrawTextExW_t)g_realDrawTextExW)(hdc, (LPWSTR)use, useCount, rect, format, params);
+        }
+
+        if (oldObj && oldObj != (HGDIOBJ)HGDI_ERROR)
+            SelectObject(hdc, oldObj);
+
+        return r;
     }
 }
 
@@ -4499,6 +4587,11 @@ static void ReadEnv(void)
     g_missAll = GetEnvironmentVariableW(L"ZHHK_MISSALL", NULL, 0) > 0;
     g_fontLog = GetEnvironmentVariableW(L"ZHHK_FONTLOG", NULL, 0) > 0;
     g_fontFace = GetEnvironmentVariableW(L"ZHHK_FONTFACE", NULL, 0) > 0;
+    {
+        wchar_t v[32] = { 0 };
+        if (GetEnvironmentVariableW(L"ZHHK_STATUSFONT", v, RTL_NUMBER_OF(v)) > 0)
+            g_doStatusFont = PatUp(v[0]) != L'0' && PatUp(v[0]) != L'O' && PatUp(v[0]) != L'F';
+    }
 
     if (!g_dictPath[0] && g_logPath[0])
     {
